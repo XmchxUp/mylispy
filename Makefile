@@ -1,6 +1,6 @@
 CC = /usr/bin/gcc
 CFLAGS = -Wall -g -O2 -Werror -std=gnu99 -Wno-unused-function 
-LIBS = -ledit
+LFLAGS = -ledit
 
 SRC_DIR = ./src
 
@@ -13,7 +13,7 @@ PLIB = $(SRC_DIR)/lib/error.c
 
 .PHONY:main
 main:
-	$(CC) $(CFLAGS) -I$(SRC_DIR) $(PLIB) $(PROGRAM) $(LIBS) -o $(EXE)
+	$(CC) $(CFLAGS) -I$(SRC_DIR) $(PLIB) $(PROGRAM) $(LFLAGS) -o $(EXE)
 	./$(EXE)
 
 clean:
