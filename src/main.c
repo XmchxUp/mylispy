@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     puts("Press Ctrl+c to Exit\n");
 
     while (1) {
-        char* input = readline("xmlispy> ");
+        char* input = readline("doge>>> ");
 
         add_history(input);
 

@@ -1,5 +1,5 @@
-CC = /usr/bin/gcc
-CFLAGS = -Wall -g -O2 -Werror -std=gnu99 -Wno-unused-function 
+CC = cc
+CFLAGS = -Wall -g -O2  -Werror -std=gnu99 -Wno-unused-function 
 LFLAGS = -ledit
 
 SRC_DIR = ./src
@@ -9,7 +9,7 @@ EXE = ./bin/main
 
 
 PROGRAM = $(SRC_DIR)/main.c
-PLIB = $(SRC_DIR)/lib/error.c
+PLIB = $(SRC_DIR)/lib/error.c $(SRC_DIR)/lib/mpc.c
 
 .PHONY:main
 main:
