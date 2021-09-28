@@ -1,6 +1,6 @@
 CC = cc
 CFLAGS = -Wall -g -O2  -Werror -std=gnu99 -Wno-unused-function 
-LFLAGS = -ledit
+LFLAGS = -ledit -lm
 
 SRC_DIR = ./src
 
