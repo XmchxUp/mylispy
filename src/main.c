@@ -43,11 +43,11 @@ int main(int argc, char** argv) {
 
     mpca_lang(MPCA_LANG_DEFAULT,
         "                                                                   \
-            number   : /-?\\d+(.\\d+)?/ ;                                   \
+            number   : /-?\\d+([.]\\d+)?/ ;                                   \
             operator : '+' | '-' | '*' | '/' | '%' |                        \
                         \"add\" | \"sub\" | \"mul\" | \"div\" ;             \
             expr     : <number> | '(' <operator> <expr>+ ')' ;              \
-            lispy    : /^/ <expr> | <operator> <expr>+ /$/ ;                \
+            lispy    : /^/ <operator> <expr>+ /$/ ;                \
         ",
         Number, Operator, Expr, Lispy);
 
@@ -61,10 +61,9 @@ int main(int argc, char** argv) {
         // parse input
         mpc_result_t r;
         if (mpc_parse("<stdin>", input, Lispy, &r)) {
-            // long result = eval(r.output);
-            mpc_ast_print(r.output);
-            // printf("%li\n", result);
-            // mpc_ast_delete(r.output);
+            long result = eval(r.output);
+            printf("%li\n", result);
+            mpc_ast_delete(r.output);
         } else {
             mpc_err_print(r.error);
             mpc_err_delete(r.error);
