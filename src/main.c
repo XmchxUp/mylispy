@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
             operator : '+' | '-' | '*' | '/' | '%' |                        \
                         \"add\" | \"sub\" | \"mul\" | \"div\" ;             \
             expr     : <number> | '(' <operator> <expr>+ ')' ;              \
-            lispy    : /^/ <operator> <expr>+ /$/ ;                \
+            lispy    : /^/ <operator> <expr>+ /$/ | /^/ '(' <operator> <expr>+ ')' /$/;                \
         ",
         Number, Operator, Expr, Lispy);
 
@@ -61,6 +61,7 @@ int main(int argc, char** argv) {
         // parse input
         mpc_result_t r;
         if (mpc_parse("<stdin>", input, Lispy, &r)) {
+            // mpc_ast_print(r.output);
             long result = eval(r.output);
             printf("%li\n", result);
             mpc_ast_delete(r.output);
@@ -95,9 +96,17 @@ static long eval(mpc_ast_t* t) {
 }
 
 static long eval_op(long x, char* op, long y) {
-    if (strcmp(op, "+") == 0) return x + y;
-    if (strcmp(op, "-") == 0) return x - y;
-    if (strcmp(op, "*") == 0) return x * y;
-    if (strcmp(op, "/") == 0) return x / y;
+    if (strcmp(op, "+") == 0 ||
+        strcmp(op, "sum") == 0)
+        return x + y;
+    if (strcmp(op, "-") == 0 ||
+        strcmp(op, "sub") == 0) 
+        return x - y;
+    if (strcmp(op, "*") == 0 ||
+        strcmp(op, "mul") == 0) 
+        return x * y;
+    if (strcmp(op, "/") == 0 ||
+        strcmp(op, "div") == 0) 
+        return x / y;
     return 0;
 }
