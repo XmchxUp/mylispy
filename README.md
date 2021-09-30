@@ -1,1 +1,1 @@
-- [教程](http://buildyourownlisp.com/contents)
+- [Build your own lisp](http://buildyourownlisp.com/contents)
