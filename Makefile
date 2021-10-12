@@ -15,6 +15,9 @@ PLIB = $(SRC_DIR)/lib/error.c $(SRC_DIR)/lib/mpc.c
 main:
 	$(CC) $(CFLAGS) -I$(SRC_DIR) $(PLIB) $(PROGRAM) $(LFLAGS) -o $(EXE)
 	./$(EXE)
-
+cgdb:
+	cgdb ./$(EXE)
+run:
+	./${EXE}
 clean:
 	rm -f *.o $(EXE)

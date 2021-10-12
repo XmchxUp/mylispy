@@ -5,10 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <headers/mpc.h>
 
 #define	MAXLINE	4096			/* max line length */
 
-#define DEBUG_VERBOSE_SET   0x0
+#define MPC_PRINT 0x1
+
+#define DEBUG_VERBOSE_SET   0x1
 
 // lib/error.c
 void	err_msg(const char *, ...);

@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
         // parse input
         mpc_result_t r;
         if (mpc_parse("<stdin>", input, Lispy, &r)) {
-            // mpc_ast_print(r.output);
+            mpc_ast_print(r.output);
             long result = eval(r.output);
             printf("%li\n", result);
             mpc_ast_delete(r.output);
@@ -82,11 +82,29 @@ static long eval(mpc_ast_t* t) {
         return atoi(t->contents);
     }
 
-    char* op = t->children[1]->contents;
+    // 括号起始()
+    /*
+    doge>>> (+ 1 2 3)
+    > 
+        regex 
+        char:1:1 '('
+        operator|char:1:2 '+'
+        expr|number|regex:1:4 '1'
+        expr|number|regex:1:6 '2'
+        expr|number|regex:1:8 '3'
+        char:1:9 ')'
+        regex
+    */
+    int op_start = 0;
+    if (strcmp(t->children[1]->contents, "(") == 0) {
+        op_start = 1;
+    }
 
-    long x = eval(t->children[2]); 
+    char* op = t->children[1 + op_start]->contents;
 
-    int i = 3;
+    long x = eval(t->children[2 + op_start]); 
+
+    int i = 3 + op_start;
     while (strstr(t->children[i]->tag, "expr")) {
         x = eval_op(x, op, eval(t->children[i]));
         i++;
@@ -97,7 +115,7 @@ static long eval(mpc_ast_t* t) {
 
 static long eval_op(long x, char* op, long y) {
     if (strcmp(op, "+") == 0 ||
-        strcmp(op, "sum") == 0)
+        strcmp(op, "add") == 0)
         return x + y;
     if (strcmp(op, "-") == 0 ||
         strcmp(op, "sub") == 0) 
