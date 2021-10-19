@@ -40,14 +40,18 @@ static mpc_parser_t* Operator;
 static mpc_parser_t* Expr;   
 static mpc_parser_t* Lispy; 
 
-static long eval(mpc_ast_t*);
-static long eval_op(long, char*, long);
+static lval eval(mpc_ast_t*);
+static lval eval_op(lval, char*, lval);
 static int number_of_leaf_node(mpc_ast_t*);
 static int number_of_nodes(mpc_ast_t*);
 static void print_vertion_info();
 static void create_parser();
 static void clean_parser();
 static void parse_input(char*);
+static lval lval_num(long);
+static lval lval_err(int);
+static void lval_print(lval);
+static void lval_println(lval);
 
 int main(int argc, char** argv) {
 
@@ -65,13 +69,52 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+static void lval_println(lval x) {
+    lval_print(x);
+    putchar('\n');
+}
+
+static void lval_print(lval lv) {
+    switch (lv.type)
+    {
+    case LVAL_NUM:
+        printf("%li", lv.num);
+        break;
+    case LVAL_ERR:
+        if (lv.err == LERR_DIV_ZERO) {
+            printf("Error: Division By Zero!");
+        } else if (lv.err == LERR_BAD_OP) {
+            printf("Error: Invalid Operator!");
+        } else if (lv.err == LERR_BAD_NUM) {
+            printf("Error: Invalid Number!");
+        }
+        break;
+    }
+}
+
+/* Create a new number type lval */
+static lval lval_num(long x) {
+    lval res;
+    res.type = LVAL_NUM;
+    res.num = x;
+    return res;
+}
+
+/* Create a new error type lval */
+static lval lval_err(int x) {
+    lval res;
+    res.type = LVAL_ERR;
+    res.err = x;
+    return res;
+}
+
 static void parse_input(char* input) {
     // parse input
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
         // mpc_ast_print(r.output);
-        long result = eval(r.output);
-        printf("%li\n", result);
+        lval result = eval(r.output);
+        lval_println(result);
         mpc_ast_delete(r.output);
     } else {
         mpc_err_print(r.error);
@@ -107,9 +150,11 @@ static void print_vertion_info() {
     printf("Press Ctrl+c to Exit\n\n");
 }
 
-static long eval(mpc_ast_t* t) {
+static lval eval(mpc_ast_t* t) {
     if (strstr(t->tag, "number")) {
-        return atoi(t->contents);
+        errno = 0;
+        long x = strtol(t->contents, NULL, 10);
+        return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
     }
 
     // 括号起始()
@@ -132,11 +177,12 @@ static long eval(mpc_ast_t* t) {
 
     char* op = t->children[1 + op_start]->contents;
 
-    long x = eval(t->children[2 + op_start]); 
+    lval x = eval(t->children[2 + op_start]); 
 
     // - 1
     if (strcmp(op, "-") == 0 && number_of_leaf_node(t) == 1) {
-        return -x;
+        x.num = 0 - x.num;
+        return x;
     }
 
     int i = 3 + op_start;
@@ -148,28 +194,40 @@ static long eval(mpc_ast_t* t) {
     return x;
 }
 
-static long eval_op(long x, char* op, long y) {
+static lval eval_op(lval x, char* op, lval y) {
+    if (x.type == LVAL_ERR) { 
+        return x; 
+    }
+
+    if (y.type == LVAL_ERR) { 
+        return y;
+    }
+
     if (strcmp(op, "+") == 0 ||
         strcmp(op, "add") == 0)
-        return x + y;
+        return lval_num(x.num + y.num);
     if (strcmp(op, "-") == 0 ||
         strcmp(op, "sub") == 0) 
-        return x - y;
+        return lval_num(x.num - y.num);
     if (strcmp(op, "*") == 0 ||
         strcmp(op, "mul") == 0) 
-        return x * y;
+        return lval_num(x.num * y.num);
     if (strcmp(op, "/") == 0 ||
-        strcmp(op, "div") == 0) 
-        return x / y;
+        strcmp(op, "div") == 0) {
+        return y.num == 0 
+            ? lval_err(LERR_DIV_ZERO)
+            : lval_num(x.num / y.num);
+    }
     if (strcmp(op, "%") == 0)
-        return x % y;
+        return lval_num(x.num % y.num);
     if (strcmp(op, "^") == 0)
-        return pow(x, y);
+        return lval_num(pow(x.num, y.num));
     if (strcmp(op, "max") == 0)
-        return MAX(x, y);
+        return lval_num(MAX(x.num, y.num));
     if (strcmp(op, "min") == 0)
-        return MIN(x, y);
-    return 0;
+        return lval_num(MIN(x.num, y.num));
+
+    return lval_err(LERR_BAD_OP);
 }
 
 /*
