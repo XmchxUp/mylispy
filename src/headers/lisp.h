@@ -40,8 +40,10 @@ enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 // lisp value
 typedef struct {
     int type;
-    long num;
-    int err;
+    union {
+        int err;
+        long num;
+    };
 } lval;
 
 
