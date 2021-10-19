@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <math.h>
 
-/* Math */
+/*===================================define===================================*/
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
@@ -18,6 +18,7 @@
 
 #define DEBUG_VERBOSE_SET   0x1
 
+/*===================================function===================================*/
 // lib/error.c
 void	err_msg(const char *, ...);
 void	err_dump(const char *, ...);
@@ -29,5 +30,19 @@ void	err_sys(const char *, ...);
 
 // lib/debug.c
 uint64_t debug_printf(uint64_t open_set, const char *format, ...);
+
+/*===================================data type===================================*/
+// {0, 1} lisp value type
+enum { LVAL_NUM, LVAL_ERR };
+// {0, 1, 2} error type
+enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
+
+// lisp value
+typedef struct {
+    int type;
+    long num;
+    int err;
+} lval;
+
 
 #endif
