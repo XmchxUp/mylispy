@@ -42,7 +42,7 @@ typedef struct {
     int type;
     union {
         int err;
-        long num;
+        double num;
     };
 } lval;
 

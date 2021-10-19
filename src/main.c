@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include <headers/mpc.h>
 #include <headers/lisp.h>
 
@@ -48,7 +49,7 @@ static void print_vertion_info();
 static void create_parser();
 static void clean_parser();
 static void parse_input(char*);
-static lval lval_num(long);
+static lval lval_num(double);
 static lval lval_err(int);
 static void lval_print(lval);
 static void lval_println(lval);
@@ -78,7 +79,9 @@ static void lval_print(lval lv) {
     switch (lv.type)
     {
     case LVAL_NUM:
-        printf("%li", lv.num);
+        // 去掉尾随零位g, 并调整精度 
+        // https://stackoverflow.com/questions/66039239/is-there-a-way-to-automatically-printf-a-float-to-the-number-of-decimal-places-i
+        printf("%.*g", DECIMAL_DIG, lv.num);
         break;
     case LVAL_ERR:
         if (lv.err == LERR_DIV_ZERO) {
@@ -93,7 +96,7 @@ static void lval_print(lval lv) {
 }
 
 /* Create a new number type lval */
-static lval lval_num(long x) {
+static lval lval_num(double x) {
     lval res;
     res.type = LVAL_NUM;
     res.num = x;
@@ -153,7 +156,7 @@ static void print_vertion_info() {
 static lval eval(mpc_ast_t* t) {
     if (strstr(t->tag, "number")) {
         errno = 0;
-        long x = strtol(t->contents, NULL, 10);
+        double x = strtod(t->contents, NULL);
         return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
     }
 
@@ -219,7 +222,8 @@ static lval eval_op(lval x, char* op, lval y) {
             : lval_num(x.num / y.num);
     }
     if (strcmp(op, "%") == 0)
-        return lval_num(x.num % y.num);
+        // return lval_num(x.num % y.num);
+        return lval_num(fmod(x.num, y.num));
     if (strcmp(op, "^") == 0)
         return lval_num(pow(x.num, y.num));
     if (strcmp(op, "max") == 0)
