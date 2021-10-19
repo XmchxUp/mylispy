@@ -12,6 +12,7 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 #define	MAXLINE	4096			/* max line length */
+#define VERSION "0.0.0.0.0.1"   /* my lisp version */
 
 #define MPC_PRINT 0x1
 

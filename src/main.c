@@ -32,17 +32,59 @@ void add_history(char* unused) {}
 #endif
 #endif
 
-static long eval(mpc_ast_t* t);
-static long eval_op(long x, char* op, long y);
-static int number_of_leaf_node(mpc_ast_t* t);
-int number_of_nodes(mpc_ast_t* t);
+#define MPC_PARSER_COUNT 4
+
+// local data
+static mpc_parser_t* Number;
+static mpc_parser_t* Operator; 
+static mpc_parser_t* Expr;   
+static mpc_parser_t* Lispy; 
+
+static long eval(mpc_ast_t*);
+static long eval_op(long, char*, long);
+static int number_of_leaf_node(mpc_ast_t*);
+static int number_of_nodes(mpc_ast_t*);
+static void print_vertion_info();
+static void create_parser();
+static void clean_parser();
+static void parse_input(char*);
 
 int main(int argc, char** argv) {
+
+    create_parser();
+    print_vertion_info();
+
+    while (1) {
+        char* input = readline("doge>>> ");
+        add_history(input);
+        parse_input(input);
+        free(input);
+    }
+
+    clean_parser();
+    return 0;
+}
+
+static void parse_input(char* input) {
+    // parse input
+    mpc_result_t r;
+    if (mpc_parse("<stdin>", input, Lispy, &r)) {
+        // mpc_ast_print(r.output);
+        long result = eval(r.output);
+        printf("%li\n", result);
+        mpc_ast_delete(r.output);
+    } else {
+        mpc_err_print(r.error);
+        mpc_err_delete(r.error);
+    }
+}
+
+static void create_parser() {
     /*Create Some Parsers */
-    mpc_parser_t* Number        = mpc_new("number");
-    mpc_parser_t* Operator      = mpc_new("operator");
-    mpc_parser_t* Expr          = mpc_new("expr");
-    mpc_parser_t* Lispy         = mpc_new("lispy");
+    Number        = mpc_new("number");
+    Operator      = mpc_new("operator");
+    Expr          = mpc_new("expr");
+    Lispy         = mpc_new("lispy");
 
     mpca_lang(MPCA_LANG_DEFAULT,
         "                                                                    \
@@ -54,31 +96,15 @@ int main(int argc, char** argv) {
             lispy    : /^/ <operator> <expr>+ /$/ | /^/ '(' <operator> <expr>+ ')' /$/;                \
         ",
         Number, Operator, Expr, Lispy);
+}
 
-    puts("XM's Lispy Version 0.0.0.0.0.1");
-    puts("Press Ctrl+c to Exit\n");
+static void clean_parser() {
+    mpc_cleanup(MPC_PARSER_COUNT, Number, Operator, Expr, Lispy);
+}
 
-    while (1) {
-        char* input = readline("doge>>> ");
-        add_history(input);
-
-        // parse input
-        mpc_result_t r;
-        if (mpc_parse("<stdin>", input, Lispy, &r)) {
-            // mpc_ast_print(r.output);
-            long result = eval(r.output);
-            printf("%li\n", result);
-            mpc_ast_delete(r.output);
-        } else {
-            mpc_err_print(r.error);
-            mpc_err_delete(r.error);
-        }
-
-        free(input);
-    }
-
-    mpc_cleanup(4, Number, Operator, Expr, Lispy);
-    return 0;
+static void print_vertion_info() {
+    printf("XM's Lispy Version %s\n", VERSION);
+    printf("Press Ctrl+c to Exit\n\n");
 }
 
 static long eval(mpc_ast_t* t) {
@@ -185,7 +211,7 @@ doge>>> (+ 1 2)
   regex 
 8
 */
-int number_of_nodes(mpc_ast_t* t) {
+static int number_of_nodes(mpc_ast_t* t) {
     if (t->children_num == 0) return 1;
     int total = 1;
     for (int i = 0; i < t->children_num; i++) {
