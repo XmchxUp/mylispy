@@ -53,13 +53,18 @@ void    *Calloc(size_t nmemb, size_t size);
 void    Free(void *ptr);
 
 // expression/expr.c
+lval*   builtin_op(lval*, char*);
 lval*   lval_num(double);
 lval*   lval_err(char*);
 lval*   lval_sym(char*);
 lval*   lval_sexpr(void);
 lval*   lval_read_num(mpc_ast_t*);
-lval*   lval_read(mpc_ast_t* t);
-lval*   lval_add(lval* v, lval* x);
+lval*   lval_read(mpc_ast_t*);
+lval*   lval_add(lval*, lval*);
+lval*   lval_eval_sexpr(lval*);
+lval*   lval_eval(lval*);
+lval*   lval_take(lval*, int);
+lval*   lval_pop(lval*, int);
 void    lval_del(lval* v);
 void    lval_print(lval*);
 void    lval_println(lval*);

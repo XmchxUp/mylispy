@@ -110,9 +110,68 @@ lval* lval_read(mpc_ast_t* t) {
 /* Symbol Expression v add one element x */
 lval* lval_add(lval* v, lval* x) {
     v->count += 1;
-    v->cell = Realloc(v->cell, sizeof(lval) * v->count);
+    v->cell = Realloc(v->cell, sizeof(lval*) * v->count);
     v->cell[v->count - 1] = x;
     return v;
+}
+
+lval* lval_eval_sexpr(lval* v) {
+    // evaluate children
+    for (int i = 0; i < v->count; i++) {
+        v->cell[i] = lval_eval(v->cell[i]);
+    }
+
+    // error checking
+    for (int i = 0; i < v->count; i++) {
+        if (v->cell[i]->type == LVAL_ERR) {
+            return lval_take(v, i);
+        }
+    }
+
+    // empty expression
+    if (v->count == 0) {
+        return v;
+    }
+
+    // signle expression
+    if (v->count == 1) {
+        return lval_take(v, 0);
+    }
+
+    lval* f = lval_pop(v, 0);
+    if (f->type != LVAL_SYM) {
+        lval_del(f);
+        lval_del(v);
+        return lval_err("S-expression Does not start with symbol!");
+    }
+
+    lval* result = builtin_op(v, f->sym);
+    lval_del(f);
+    return result;
+}
+
+lval* lval_eval(lval* v) {
+    if (v->type == LVAL_SEXPR) {
+        return lval_eval_sexpr(v);
+    }
+    return v;
+}
+
+lval* lval_pop(lval* v, int i) {
+    lval* x = v->cell[i];
+
+    memmove(&v->cell[i], &v->cell[i + 1], 
+        sizeof(lval*) * (v->count - i - 1));
+
+    v->count -= 1;
+    v->cell = Realloc(v->cell, sizeof(lval*) * v->count);
+    return x;
+}
+
+lval* lval_take(lval* v, int i) {
+    lval* x = lval_pop(v, i);
+    lval_del(v);
+    return x;
 }
 
 void lval_expr_print(lval* v, char open, char close) {
@@ -149,4 +208,56 @@ void lval_print(lval* lv) {
         lval_expr_print(lv, '(', ')');
         break;
     }
+}
+
+lval* builtin_op(lval* v, char* op) {
+    // ensure all arguments are numbers
+    for (int i = 0; i < v->count; i++) {
+        if (v->cell[i]->type != LVAL_NUM) {
+            lval_del(v);
+            return lval_err("Cannot operate on non-number!");
+        }
+    }
+
+    lval* x = lval_pop(v, 0);
+    
+    if ((strcmp(op, "-") == 0) && v->count == 0) {
+        x->num = 0 - x->num;
+    }
+
+    while (v->count > 0) {
+        lval* y = lval_pop(v, 0);
+
+        if (strcmp(op, "+") == 0 ||
+            strcmp(op, "add") == 0)
+            x->num += y->num;
+        if (strcmp(op, "-") == 0 ||
+            strcmp(op, "sub") == 0) 
+            x->num -= y->num;
+        if (strcmp(op, "*") == 0 ||
+            strcmp(op, "mul") == 0) 
+            x->num *= y->num;
+        if (strcmp(op, "/") == 0 ||
+            strcmp(op, "div") == 0) {
+            if (y->num == 0) {
+                lval_del(x);
+                lval_del(y);
+                x = lval_err("Division By Zero!");
+                break;
+            }
+            x->num /= y->num;
+        }
+        if (strcmp(op, "%") == 0)
+            x->num = fmod(x->num, y->num);
+        if (strcmp(op, "^") == 0)
+            x->num = pow(x->num, y->num);
+        if (strcmp(op, "max") == 0)
+            x->num = MAX(x->num, y->num);
+        if (strcmp(op, "min") == 0)
+            x->num = MIN(x->num, y->num);
+        lval_del(y);
+    }
+
+    lval_del(v); 
+    return x;
 }
