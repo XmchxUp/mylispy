@@ -33,13 +33,14 @@ void add_history(char* unused) {}
 #endif
 #endif
 
-#define MPC_PARSER_COUNT 4
+#define MPC_PARSER_COUNT 5
 
 // local data
 static mpc_parser_t* Number;
-static mpc_parser_t* Operator; 
-static mpc_parser_t* Expr;   
-static mpc_parser_t* Lispy; 
+static mpc_parser_t* Symbol;
+static mpc_parser_t* Sexpr;
+static mpc_parser_t* Expr;  
+static mpc_parser_t* Lispy;
 
 static lval eval(mpc_ast_t*);
 static lval eval_op(lval, char*, lval);
@@ -115,10 +116,10 @@ static void parse_input(char* input) {
     // parse input
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-        // mpc_ast_print(r.output);
-        lval result = eval(r.output);
-        lval_println(result);
-        mpc_ast_delete(r.output);
+        mpc_ast_print(r.output);
+        // lval result = eval(r.output);
+        // lval_println(result);
+        // mpc_ast_delete(r.output);
     } else {
         mpc_err_print(r.error);
         mpc_err_delete(r.error);
@@ -128,24 +129,26 @@ static void parse_input(char* input) {
 static void create_parser() {
     /*Create Some Parsers */
     Number        = mpc_new("number");
-    Operator      = mpc_new("operator");
+    Symbol        = mpc_new("symbol");
+    Sexpr         = mpc_new("sexpr");
     Expr          = mpc_new("expr");
     Lispy         = mpc_new("lispy");
 
     mpca_lang(MPCA_LANG_DEFAULT,
         "                                                                    \
             number   : /-?\\d+([.]\\d+)?/ ;                                   \
-            operator : '+' | '-' | '*' | '/' | '%' | '^' |                     \
+            symbol   : '+' | '-' | '*' | '/' | '%' | '^' |                     \
                         \"add\" | \"sub\" | \"mul\" | \"div\" |                 \
                         \"min\" | \"max\";                                       \
-            expr     : <number> | '(' <operator> <expr>+ ')' ;                    \
-            lispy    : /^/ <operator> <expr>+ /$/ | /^/ '(' <operator> <expr>+ ')' /$/;                \
+            sexpr    : '(' <expr>* ')';                                           \
+            expr     : <number> | <symbol> | <sexpr> ;                     \
+            lispy    : /^/ <expr>* /$/ ;                                            \
         ",
-        Number, Operator, Expr, Lispy);
+        Number, Symbol, Sexpr, Expr, Lispy);
 }
 
 static void clean_parser() {
-    mpc_cleanup(MPC_PARSER_COUNT, Number, Operator, Expr, Lispy);
+    mpc_cleanup(MPC_PARSER_COUNT, Number, Symbol, Sexpr, Expr, Lispy);
 }
 
 static void print_vertion_info() {
