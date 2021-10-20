@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <float.h>
-#include <headers/mpc.h>
 #include <headers/lisp.h>
 
 /* comipling on windows */
@@ -42,8 +40,6 @@ static mpc_parser_t* Sexpr;
 static mpc_parser_t* Expr;  
 static mpc_parser_t* Lispy;
 
-static lval eval(mpc_ast_t*);
-static lval eval_op(lval, char*, lval);
 static int number_of_leaf_node(mpc_ast_t*);
 static int number_of_nodes(mpc_ast_t*);
 static void print_vertion_info();
@@ -71,9 +67,10 @@ static void parse_input(char* input) {
     // parse input
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-        mpc_ast_print(r.output);
-        // lval result = eval(r.output);
-        // lval_println(result);
+        // mpc_ast_print(r.output);
+        lval* x = lval_read(r.output);
+        lval_println(x);
+        lval_del(x);
         // mpc_ast_delete(r.output);
     } else {
         mpc_err_print(r.error);
@@ -109,87 +106,6 @@ static void clean_parser() {
 static void print_vertion_info() {
     printf("XM's Lispy Version %s\n", VERSION);
     printf("Press Ctrl+c to Exit\n\n");
-}
-
-static lval eval(mpc_ast_t* t) {
-    if (strstr(t->tag, "number")) {
-        errno = 0;
-        double x = strtod(t->contents, NULL);
-        return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
-    }
-
-    // 括号起始()
-    /*
-    doge>>> (+ 1 2 3)
-    > 
-        regex 
-        char:1:1 '('
-        operator|char:1:2 '+'
-        expr|number|regex:1:4 '1'
-        expr|number|regex:1:6 '2'
-        expr|number|regex:1:8 '3'
-        char:1:9 ')'
-        regex
-    */
-    int op_start = 0;
-    if (strcmp(t->children[1]->contents, "(") == 0) {
-        op_start = 1;
-    }
-
-    char* op = t->children[1 + op_start]->contents;
-
-    lval x = eval(t->children[2 + op_start]); 
-
-    // - 1
-    if (strcmp(op, "-") == 0 && number_of_leaf_node(t) == 1) {
-        x.num = 0 - x.num;
-        return x;
-    }
-
-    int i = 3 + op_start;
-    while (strstr(t->children[i]->tag, "expr")) {
-        x = eval_op(x, op, eval(t->children[i]));
-        i++;
-    }
-
-    return x;
-}
-
-static lval eval_op(lval x, char* op, lval y) {
-    if (x.type == LVAL_ERR) { 
-        return x; 
-    }
-
-    if (y.type == LVAL_ERR) { 
-        return y;
-    }
-
-    if (strcmp(op, "+") == 0 ||
-        strcmp(op, "add") == 0)
-        return lval_num(x.num + y.num);
-    if (strcmp(op, "-") == 0 ||
-        strcmp(op, "sub") == 0) 
-        return lval_num(x.num - y.num);
-    if (strcmp(op, "*") == 0 ||
-        strcmp(op, "mul") == 0) 
-        return lval_num(x.num * y.num);
-    if (strcmp(op, "/") == 0 ||
-        strcmp(op, "div") == 0) {
-        return y.num == 0 
-            ? lval_err(LERR_DIV_ZERO)
-            : lval_num(x.num / y.num);
-    }
-    if (strcmp(op, "%") == 0)
-        // return lval_num(x.num % y.num);
-        return lval_num(fmod(x.num, y.num));
-    if (strcmp(op, "^") == 0)
-        return lval_num(pow(x.num, y.num));
-    if (strcmp(op, "max") == 0)
-        return lval_num(MAX(x.num, y.num));
-    if (strcmp(op, "min") == 0)
-        return lval_num(MIN(x.num, y.num));
-
-    return lval_err(LERR_BAD_OP);
 }
 
 /*
