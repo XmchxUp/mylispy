@@ -27,12 +27,27 @@ void	err_cont(int, const char *, ...);
 void	err_exit(int, const char *, ...);
 void	err_ret(const char *, ...);
 void	err_sys(const char *, ...);
+// lib/util.c
+/* Dynamic storage allocation wrappers */
+void    *Malloc(size_t size);
+void    *Realloc(void *ptr, size_t size);
+void    *Calloc(size_t nmemb, size_t size);
+void    Free(void *ptr);
+
+// expression/expr.c
+lval*   lval_num(double);
+lval*   lval_err(char*);
+lval*   lval_sym(char*);
+lval*   lval_sexpr(void);
+void    lval_del(lval* v);
+void    lval_print(lval*);
+void    lval_println(lval*);
 
 // lib/debug.c
 uint64_t debug_printf(uint64_t open_set, const char *format, ...);
 
 /*===================================data type===================================*/
-// {0, 1} lisp value type
+// {0, 1, 2, 3} lisp value type
 enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
 
 // lisp value

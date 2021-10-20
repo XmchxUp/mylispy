@@ -50,10 +50,6 @@ static void print_vertion_info();
 static void create_parser();
 static void clean_parser();
 static void parse_input(char*);
-static lval lval_num(double);
-static lval lval_err(int);
-static void lval_print(lval);
-static void lval_println(lval);
 
 int main(int argc, char** argv) {
 
@@ -69,47 +65,6 @@ int main(int argc, char** argv) {
 
     clean_parser();
     return 0;
-}
-
-static void lval_println(lval x) {
-    lval_print(x);
-    putchar('\n');
-}
-
-static void lval_print(lval lv) {
-    switch (lv.type)
-    {
-    case LVAL_NUM:
-        // 去掉尾随零位g, 并调整精度 
-        // https://stackoverflow.com/questions/66039239/is-there-a-way-to-automatically-printf-a-float-to-the-number-of-decimal-places-i
-        printf("%.*g", DECIMAL_DIG, lv.num);
-        break;
-    case LVAL_ERR:
-        if (lv.err == LERR_DIV_ZERO) {
-            printf("Error: Division By Zero!");
-        } else if (lv.err == LERR_BAD_OP) {
-            printf("Error: Invalid Operator!");
-        } else if (lv.err == LERR_BAD_NUM) {
-            printf("Error: Invalid Number!");
-        }
-        break;
-    }
-}
-
-/* Create a new number type lval */
-static lval lval_num(double x) {
-    lval res;
-    res.type = LVAL_NUM;
-    res.num = x;
-    return res;
-}
-
-/* Create a new error type lval */
-static lval lval_err(int x) {
-    lval res;
-    res.type = LVAL_ERR;
-    res.err = x;
-    return res;
 }
 
 static void parse_input(char* input) {
