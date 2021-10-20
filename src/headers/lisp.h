@@ -33,17 +33,17 @@ uint64_t debug_printf(uint64_t open_set, const char *format, ...);
 
 /*===================================data type===================================*/
 // {0, 1} lisp value type
-enum { LVAL_NUM, LVAL_ERR };
-// {0, 1, 2} error type
-enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
+enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
 
 // lisp value
 typedef struct {
     int type;
-    union {
-        int err;
-        double num;
-    };
+
+    char* err;
+    char* sym;
+    
+    int count;
+    lval** cell;
 } lval;
 
 
