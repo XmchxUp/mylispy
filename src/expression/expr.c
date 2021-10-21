@@ -164,7 +164,21 @@ lval* lval_pop(lval* v, int i) {
         sizeof(lval*) * (v->count - i - 1));
 
     v->count -= 1;
-    v->cell = Realloc(v->cell, sizeof(lval*) * v->count);
+
+    // 使用安全函数需特殊处理 BUG用时1个小时，定位速度太慢，多看文档
+    /*
+    The  realloc() function changes the size of the memory block pointed to by ptr to size bytes.  The contents will be unchanged in the range from
+    the start of the region up to the minimum of the old and new sizes.  If the new size is larger than the old size, the added memory will not  be
+    initialized.   If  ptr  is  NULL, then the call is equivalent to malloc(size), for all values of size; if size is equal to zero, and ptr is not
+    NULL, then the call is equivalent to free(ptr).  Unless ptr is NULL, it must have been returned by an earlier call to  malloc(),  calloc(),  or
+    realloc().  If the area pointed to was moved, a free(ptr) is done.
+    */
+    if (v->count > 0)  {
+        v->cell = Realloc(v->cell, sizeof(lval*) * v->count);
+    } else {
+        free(v->cell);
+        v->cell = NULL;
+    }
     return x;
 }
 
@@ -229,16 +243,16 @@ lval* builtin_op(lval* v, char* op) {
         lval* y = lval_pop(v, 0);
 
         if (strcmp(op, "+") == 0 ||
-            strcmp(op, "add") == 0)
+            strcmp(op, "add") == 0) {
             x->num += y->num;
-        if (strcmp(op, "-") == 0 ||
-            strcmp(op, "sub") == 0) 
+        } else if (strcmp(op, "-") == 0 ||
+                   strcmp(op, "sub") == 0) {
             x->num -= y->num;
-        if (strcmp(op, "*") == 0 ||
-            strcmp(op, "mul") == 0) 
+        } else if (strcmp(op, "*") == 0 ||
+                   strcmp(op, "mul") == 0) {
             x->num *= y->num;
-        if (strcmp(op, "/") == 0 ||
-            strcmp(op, "div") == 0) {
+        } else if (strcmp(op, "/") == 0 ||
+                   strcmp(op, "div") == 0) {
             if (y->num == 0) {
                 lval_del(x);
                 lval_del(y);
@@ -246,15 +260,15 @@ lval* builtin_op(lval* v, char* op) {
                 break;
             }
             x->num /= y->num;
-        }
-        if (strcmp(op, "%") == 0)
+        } else if (strcmp(op, "%") == 0) {
             x->num = fmod(x->num, y->num);
-        if (strcmp(op, "^") == 0)
+        } else if (strcmp(op, "^") == 0) {
             x->num = pow(x->num, y->num);
-        if (strcmp(op, "max") == 0)
+        } else if (strcmp(op, "max") == 0) {
             x->num = MAX(x->num, y->num);
-        if (strcmp(op, "min") == 0)
+        } else if (strcmp(op, "min") == 0) {
             x->num = MIN(x->num, y->num);
+        }
         lval_del(y);
     }
 

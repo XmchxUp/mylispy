@@ -15,7 +15,7 @@
 #define	MAXLINE	4096			/* max line length */
 #define VERSION "0.0.0.0.0.1"   /* my lisp version */
 
-#define MPC_PRINT 0x1
+#define MPC_AST_PRINT 0x1
 
 #define DEBUG_VERBOSE_SET   0x1
 
@@ -72,5 +72,6 @@ void    lval_expr_print(lval*, char, char);
 
 // lib/debug.c
 uint64_t debug_printf(uint64_t open_set, const char *format, ...);
+uint64_t debug_mpc_ast_print(uint64_t open_set, mpc_ast_t* a);
 
 #endif

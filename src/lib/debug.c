@@ -16,3 +16,11 @@ uint64_t debug_printf(uint64_t open_set, const char *format, ...) {
 
     return 0x0;
 }
+
+uint64_t debug_mpc_ast_print(uint64_t open_set, mpc_ast_t* a) {
+    if ((open_set & DEBUG_VERBOSE_SET) == 0x0) {
+        return 0x01;
+    }
+    mpc_ast_print(a);
+    return 0x0;
+}
