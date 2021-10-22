@@ -1,5 +1,11 @@
 #include <headers/lisp.h>
 
+// list 接收一个或者多个参数，返回一个包含所有参数的Q-表达式
+// head 接受一个Q-表达式，返回一个包含其第一个元素的Q-表达式
+// tail 接受一个Q-表达式，返回一个除首元素外的Q-表达式
+// join 接受一个或者多个Q-表达式，返回一个将其连在一起的Q-表达式
+// eval 接受一个Q-表达式，将其看做一个S-表达式，并运行
+
 lval* builtin_op(lval* v, char* op) {
     // ensure all arguments are numbers
     for (int i = 0; i < v->count; i++) {
