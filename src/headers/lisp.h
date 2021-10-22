@@ -13,7 +13,7 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 #define	MAXLINE	4096			/* max line length */
-#define VERSION "0.0.0.0.0.2"   /* my lisp version */
+#define VERSION "0.0.0.0.0.3"   /* my lisp version */
 
 #define MPC_AST_PRINT 0x1
 
@@ -22,7 +22,7 @@
 
 /*===================================data type===================================*/
 // {0, 1, 2, 3} lisp value type
-enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
+enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
 
 // lisp value
 typedef struct lval {
@@ -57,6 +57,7 @@ lval*   builtin_op(lval*, char*);
 lval*   lval_num(double);
 lval*   lval_err(char*);
 lval*   lval_sym(char*);
+lval*   lval_sexpr(void);
 lval*   lval_sexpr(void);
 lval*   lval_read_num(mpc_ast_t*);
 lval*   lval_read(mpc_ast_t*);

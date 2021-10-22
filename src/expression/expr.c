@@ -36,6 +36,15 @@ lval* lval_sexpr(void) {
   return v;
 }
 
+/* A pointer to a new empty Qexpr lval */
+lval* lval_qexpr(void) {
+    lval* v = Malloc(sizeof(lval));
+    v->type = LVAL_QEXPR;
+    v->count = 0;
+    v->cell = NULL;
+    return v;
+}
+
 void lval_del(lval* lv) {
     switch (lv->type)
     {
@@ -47,6 +56,7 @@ void lval_del(lval* lv) {
     case LVAL_SYM:
         Free(lv->sym);
         break;
+    case LVAL_QEXPR:
     case LVAL_SEXPR:
         for (int i = 0; i < lv->count; i++) {
             lval_del(lv->cell[i]);
@@ -95,9 +105,15 @@ lval* lval_read(mpc_ast_t* t) {
         x = lval_sexpr();
     }
 
+    if (strstr(t->tag, "qexpr")) {
+        x = lval_qexpr();
+    }
+
     for (int i = 0; i < t->children_num; i++) {
         if (strcmp(t->children[i]->contents, "(") == 0 ||
             strcmp(t->children[i]->contents, ")") == 0 ||
+            strcmp(t->children[i]->contents, "{") == 0 ||
+            strcmp(t->children[i]->contents, "}") == 0 ||
             strcmp(t->children[i]->tag, "regex") == 0) {
             continue;
         }
@@ -220,6 +236,9 @@ void lval_print(lval* lv) {
         break;
     case LVAL_SEXPR:
         lval_expr_print(lv, '(', ')');
+        break;
+    case LVAL_QEXPR:
+        lval_expr_print(lv, '{', '}');
         break;
     }
 }
