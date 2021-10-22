@@ -52,8 +52,10 @@ void    *Realloc(void *ptr, size_t size);
 void    *Calloc(size_t nmemb, size_t size);
 void    Free(void *ptr);
 
-// expression/expr.c
+// operation/op.c
 lval*   builtin_op(lval*, char*);
+
+// expression/expr.c
 lval*   lval_num(double);
 lval*   lval_err(char*);
 lval*   lval_sym(char*);

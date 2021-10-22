@@ -9,7 +9,7 @@ EXE = ./bin/main
 
 
 PROGRAM = $(SRC_DIR)/main.c
-PLIB = $(SRC_DIR)/lib/debug.c $(SRC_DIR)/lib/error.c $(SRC_DIR)/lib/mpc.c $(SRC_DIR)/expression/expr.c $(SRC_DIR)/lib/util.c
+PLIB = $(SRC_DIR)/lib/debug.c $(SRC_DIR)/lib/error.c $(SRC_DIR)/lib/mpc.c $(SRC_DIR)/expression/expr.c $(SRC_DIR)/operation/op.c $(SRC_DIR)/lib/util.c
 
 .PHONY:main
 main:
