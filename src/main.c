@@ -40,8 +40,6 @@ static mpc_parser_t* Sexpr;
 static mpc_parser_t* Expr;  
 static mpc_parser_t* Lispy;
 
-static int number_of_leaf_node(mpc_ast_t*);
-static int number_of_nodes(mpc_ast_t*);
 static void print_vertion_info();
 static void create_parser();
 static void clean_parser();
@@ -106,52 +104,4 @@ static void clean_parser() {
 static void print_vertion_info() {
     printf("XM's Lispy Version %s\n", VERSION);
     printf("Press Ctrl+c to Exit\n\n");
-}
-
-/*
-doge>>> (+ 1 2 3)
-> 
-  regex 
-  char:1:1 '('
-  operator|char:1:2 '+'
-  expr|number|regex:1:4 '1'
-  expr|number|regex:1:6 '2'
-  expr|number|regex:1:8 '3'
-  char:1:9 ')'
-  regex 
-3
-*/
-static int number_of_leaf_node(mpc_ast_t* t) {
-    if (t->children_num == 0) {
-        if (strstr(t->tag, "expr"))
-            return 1;
-        return 0;
-    }
-
-    int total = 0;
-    for (int i = 0; i < t->children_num; i++) {
-        total += number_of_leaf_node(t->children[i]);
-    }
-    return total;
-}
-
-/*
-doge>>> (+ 1 2)
-> 
-  regex 
-  char:1:1 '('
-  operator|char:1:2 '+'
-  expr|number|regex:1:4 '1'
-  expr|number|regex:1:6 '2'
-  char:1:7 ')'
-  regex 
-8
-*/
-static int number_of_nodes(mpc_ast_t* t) {
-    if (t->children_num == 0) return 1;
-    int total = 1;
-    for (int i = 0; i < t->children_num; i++) {
-        total += number_of_nodes(t->children[i]);
-    }
-    return total;
 }
