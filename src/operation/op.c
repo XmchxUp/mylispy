@@ -9,7 +9,7 @@ lval* builtin_list(lval* v) {
 // join 接受一个或者多个Q-表达式，返回一个将其连在一起的Q-表达式
 lval* builtin_join(lval* v) {
     for (int i = 0; i < v->count; i++) {
-        LASSERT(v, v->cell[i]->type != LVAL_QEXPR,
+        LASSERT(v, v->cell[i]->type == LVAL_QEXPR,
             "Function 'head' passed incorrect types!");
     }
 
@@ -25,9 +25,9 @@ lval* builtin_join(lval* v) {
 
 // eval 接受一个Q-表达式，将其看做一个S-表达式，并运行
 lval* builtin_eval(lval* v) {
-    LASSERT(v, v->count != 1, 
+    LASSERT(v, v->count == 1, 
         "Function 'head' passed too many arguments!");
-    LASSERT(v, v->cell[0]->type != LVAL_QEXPR,
+    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
         "Function 'head' passed incorrect types!");
     lval* a = lval_take(v, 0);
     a->type = LVAL_SEXPR;
@@ -36,11 +36,11 @@ lval* builtin_eval(lval* v) {
 
 // head 接受一个Q-表达式，返回一个包含其第一个元素的Q-表达式
 lval* builtin_head(lval* v) {
-    LASSERT(v, v->count != 1, 
+    LASSERT(v, v->count == 1, 
         "Function 'head' passed too many arguments!");
-    LASSERT(v, v->cell[0]->type != LVAL_QEXPR,
+    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
         "Function 'head' passed incorrect types!");
-    LASSERT(v, v->cell[0]->count == 0, 
+    LASSERT(v, v->cell[0]->count != 0, 
         "Function 'head' passed {}!");
     
     lval* a = lval_take(v, 0);
@@ -52,11 +52,11 @@ lval* builtin_head(lval* v) {
 
 // tail 接受一个Q-表达式，返回一个除首元素外的Q-表达式
 lval* builtin_tail(lval* v) {
-    LASSERT(v, v->count != 1, 
+    LASSERT(v, v->count == 1, 
         "Function 'tail' passed too many arguments!");
-    LASSERT(v, v->cell[0]->type != LVAL_QEXPR,
+    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
         "Function 'tail' passed incorrect types!");
-    LASSERT(v, v->cell[0]->count == 0, 
+    LASSERT(v, v->cell[0]->count != 0, 
         "Function 'tail' passed {}!");
 
     lval* a = lval_take(v, 0);
