@@ -123,7 +123,7 @@ lval* lval_read(mpc_ast_t* t) {
     return x;
 }
 
-/* Symbol Expression v add one element x */
+/* Expression v add one element x */
 lval* lval_add(lval* v, lval* x) {
     v->count += 1;
     v->cell = Realloc(v->cell, sizeof(lval*) * v->count);
@@ -241,4 +241,13 @@ void lval_print(lval* lv) {
         lval_expr_print(lv, '{', '}');
         break;
     }
+}
+
+lval* lval_join(lval* x, lval* y) {
+    while (y->count) {
+        x = lval_add(x, lval_pop(y, 0));
+    }
+    
+    lval_del(y);
+    return x;
 }

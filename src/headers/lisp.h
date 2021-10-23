@@ -60,8 +60,12 @@ void    Free(void *ptr);
 lval*   builtin_op(lval*, char*);
 lval*   builtin_head(lval*);
 lval*   builtin_tail(lval*);
+lval*   builtin_list(lval*);
+lval*   builtin_eval(lval*);
+lval*   builtin_join(lval*);
 
 // expression/expr.c
+lval*   lval_join(lval*, lval*);
 lval*   lval_num(double);
 lval*   lval_err(char*);
 lval*   lval_sym(char*);

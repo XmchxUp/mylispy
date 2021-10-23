@@ -1,6 +1,39 @@
 #include <headers/lisp.h>
 
-// list 接收一个或者多个参数，返回一个包含所有参数的Q-表达式
+// list 接收一个或者多个参数的S-表达式，返回一个包含所有参数的Q-表达式
+lval* builtin_list(lval* v) {
+    v->type = LVAL_SEXPR;
+    return v;
+}
+
+// join 接受一个或者多个Q-表达式，返回一个将其连在一起的Q-表达式
+lval* builtin_join(lval* v) {
+    for (int i = 0; i < v->count; i++) {
+        LASSERT(v, v->cell[i]->type != LVAL_QEXPR,
+            "Function 'head' passed incorrect types!");
+    }
+
+    lval* a = lval_pop(v, 0);
+    while (v->count) {
+        a = lval_join(a, lval_pop(v, 0));
+    }
+
+    lval_del(v);
+    return a;
+}
+
+
+// eval 接受一个Q-表达式，将其看做一个S-表达式，并运行
+lval* builtin_eval(lval* v) {
+    LASSERT(v, v->count != 1, 
+        "Function 'head' passed too many arguments!");
+    LASSERT(v, v->cell[0]->type != LVAL_QEXPR,
+        "Function 'head' passed incorrect types!");
+    lval* a = lval_take(v, 0);
+    a->type = LVAL_SEXPR;
+    return lval_eval(a);
+}
+
 // head 接受一个Q-表达式，返回一个包含其第一个元素的Q-表达式
 lval* builtin_head(lval* v) {
     LASSERT(v, v->count != 1, 
@@ -32,8 +65,6 @@ lval* builtin_tail(lval* v) {
     return a;
 }
 
-// join 接受一个或者多个Q-表达式，返回一个将其连在一起的Q-表达式
-// eval 接受一个Q-表达式，将其看做一个S-表达式，并运行
 
 lval* builtin_op(lval* v, char* op) {
     // ensure all arguments are numbers
