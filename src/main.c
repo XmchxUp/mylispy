@@ -91,7 +91,8 @@ static void create_parser() {
             number   : /-?\\d+([.]\\d+)?/ ;                                         \
             symbol   : '+' | '-' | '*' | '/' | '%' | '^' |                           \
                         \"add\" | \"sub\" | \"mul\" | \"div\" | \"mod\" | \"pow\" |  \"min\" | \"max\" |  \
-                        \"list\" | \"head\" | \"tail\" | \"join\" | \"eval\" | \"len\" | \"cons\" ;    \
+                        \"list\" | \"head\" | \"tail\" | \"join\" | \"eval\" |  \
+                        \"len\" | \"cons\" | \"init\" ;                          \
             sexpr    : '(' <expr>* ')';                                           \
             qexpr    : '{' <expr>* '}';                                            \
             expr     : <number> | <symbol> | <sexpr> | <qexpr> ;                    \

@@ -93,7 +93,16 @@ lval* builtin_len(lval* v) {
 
 // 返回Q-表达式中除最后一个元素外的其他元素
 lval* builtin_init(lval* v) {
-    return NULL;
+    LASSERT(v, v->count == 1, 
+        "Function 'init' passed too many arguments!");
+    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
+        "Function 'init' passed incorrect types!");
+    LASSERT(v, v->cell[0]->count != 0, 
+        "Function 'init' passed {}!");
+
+    lval* a = lval_take(v, 0);
+    lval_del(lval_pop(a, a->count - 1));
+    return a;
 }
 
 lval* builtin(lval* v, char* func) {
@@ -118,6 +127,9 @@ lval* builtin(lval* v, char* func) {
     if (strcmp("cons", func) == 0) {
         return builtin_cons(v);
     }
+    if (strcmp("init", func) == 0) {
+        return builtin_init(v);
+    } 
     if (strstr("add+sub-div/mul*mod%pow^maxmin", func)) {
         return builtin_op(v, func);
     }
