@@ -65,6 +65,28 @@ lval* builtin_tail(lval* v) {
     return a;
 }
 
+// 将num添加到v(Q-表达式)首位
+lval* builtin_cons(lval* v, lval* num) {
+    return NULL;
+}
+
+// 返回Q-表达式中的元素个数
+lval* builtin_len(lval* v) {
+    LASSERT(v, v->count == 1, 
+        "Function 'len' passed too many arguments!");
+    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
+        "Function 'len' passed incorrect types!");
+
+    lval* res = lval_num(v->cell[0]->count);
+    lval_del(v);
+    return res;
+}
+
+// 返回Q-表达式中除最后一个元素外的其他元素
+lval* builtin_init(lval* v) {
+    return NULL;
+}
+
 lval* builtin(lval* v, char* func) {
     if (strcmp("list", func) == 0) {
         return builtin_list(v);
@@ -80,6 +102,9 @@ lval* builtin(lval* v, char* func) {
     }
     if (strcmp("tail", func) == 0) {
         return builtin_tail(v);
+    }
+    if (strcmp("len", func) == 0) {
+        return builtin_len(v);
     }
     if (strstr("add+sub-div/mul*mod%pow^maxmin", func)) {
         return builtin_op(v, func);

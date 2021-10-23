@@ -13,7 +13,7 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 #define	MAXLINE	4096			/* max line length */
-#define VERSION "0.0.0.0.0.3"   /* my lisp version */
+#define VERSION "0.0.0.0.0.4"   /* my lisp version */
 
 // for debug
 #define MPC_AST_PRINT 0x1
@@ -64,6 +64,9 @@ lval*   builtin_tail(lval*);
 lval*   builtin_list(lval*);
 lval*   builtin_eval(lval*);
 lval*   builtin_join(lval*);
+lval*   builtin_init(lval*);
+lval*   builtin_len(lval*);
+lval*   builtin_cons(lval*, lval*);
 
 // expression/expr.c
 lval*   lval_join(lval*, lval*);
