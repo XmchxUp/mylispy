@@ -2,7 +2,52 @@
 
 // list 接收一个或者多个参数，返回一个包含所有参数的Q-表达式
 // head 接受一个Q-表达式，返回一个包含其第一个元素的Q-表达式
+lval* builtin_head(lval* v) {
+    if (v->count != 1) {
+        lval_del(v);
+        return lval_err("Function 'head' passed too many arguments!");
+    }
+
+    if (v->cell[0]->type != LVAL_QEXPR) {
+        lval_del(v);
+        return lval_err("Function 'head' passed incorrect types!");
+    }
+
+    if (v->cell[0]->count == 0) {
+        lval_del(v);
+        return lval_err("Function 'head' passed {}!");
+    }
+    
+    lval* a = lval_take(v, 0);
+    while (a->count > 1) {
+        lval_del(lval_pop(a, 1));
+    }
+    return a;
+}
+
 // tail 接受一个Q-表达式，返回一个除首元素外的Q-表达式
+lval* builtin_head(lval* v) {
+    if (v->count != 1) {
+        lval_del(v);
+        return lval_err("Function 'tail' passed too many arguments!");
+    }
+
+    if (v->cell[0]->type != LVAL_QEXPR) {
+        lval_del(v);
+        return lval_err("Function 'tail' passed incorrect types!");
+    }
+
+    if (v->cell[0]->count == 0) {
+        lval_del(v);
+        return lval_err("Function 'tail' passed {}!");
+    }
+
+    lval* a = lval_take(v, 0);
+    
+    lval_del(lval_pop(a, 0));
+    return a;
+}
+
 // join 接受一个或者多个Q-表达式，返回一个将其连在一起的Q-表达式
 // eval 接受一个Q-表达式，将其看做一个S-表达式，并运行
 

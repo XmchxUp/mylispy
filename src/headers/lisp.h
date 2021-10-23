@@ -54,6 +54,8 @@ void    Free(void *ptr);
 
 // operation/op.c
 lval*   builtin_op(lval*, char*);
+lval*   builtin_head(lval*);
+lval*   builtin_tail(lval*);
 
 // expression/expr.c
 lval*   lval_num(double);
