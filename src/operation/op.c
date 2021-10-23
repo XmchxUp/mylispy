@@ -65,6 +65,28 @@ lval* builtin_tail(lval* v) {
     return a;
 }
 
+lval* builtin(lval* v, char* func) {
+    if (strcmp("list", func) == 0) {
+        return builtin_list(v);
+    }
+    if (strcmp("eval", func) == 0) {
+        return builtin_eval(v);
+    }
+    if (strcmp("join", func) == 0) {
+        return builtin_join(v);
+    }
+    if (strcmp("head", func) == 0) {
+        return builtin_head(v);
+    }
+    if (strcmp("tail", func) == 0) {
+        return builtin_tail(v);
+    }
+    if (strstr("add+sub-div/mul*mod%pow^maxmin", func)) {
+        return builtin_op(v, func);
+    }
+    lval_del(v);
+    return lval_err("Unknown Function!");
+}
 
 lval* builtin_op(lval* v, char* op) {
     // ensure all arguments are numbers
@@ -102,9 +124,11 @@ lval* builtin_op(lval* v, char* op) {
                 break;
             }
             x->num /= y->num;
-        } else if (strcmp(op, "%") == 0) {
+        } else if (strcmp(op, "%") == 0 ||
+                   strcmp(op, "mod") == 0) {
             x->num = fmod(x->num, y->num);
-        } else if (strcmp(op, "^") == 0) {
+        } else if (strcmp(op, "^") == 0 ||
+                   strcmp(op, "pow") == 0) {
             x->num = pow(x->num, y->num);
         } else if (strcmp(op, "max") == 0) {
             x->num = MAX(x->num, y->num);

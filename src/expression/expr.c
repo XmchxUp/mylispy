@@ -161,7 +161,7 @@ lval* lval_eval_sexpr(lval* v) {
         return lval_err("S-expression Does not start with symbol!");
     }
 
-    lval* result = builtin_op(v, f->sym);
+    lval* result = builtin(v, f->sym);
     lval_del(f);
     return result;
 }
@@ -247,7 +247,7 @@ lval* lval_join(lval* x, lval* y) {
     while (y->count) {
         x = lval_add(x, lval_pop(y, 0));
     }
-    
+
     lval_del(y);
     return x;
 }

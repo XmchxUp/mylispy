@@ -57,6 +57,7 @@ void    *Calloc(size_t nmemb, size_t size);
 void    Free(void *ptr);
 
 // operation/op.c
+lval*   builtin(lval*, char*);
 lval*   builtin_op(lval*, char*);
 lval*   builtin_head(lval*);
 lval*   builtin_tail(lval*);
