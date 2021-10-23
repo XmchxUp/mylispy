@@ -66,7 +66,7 @@ lval*   builtin_eval(lval*);
 lval*   builtin_join(lval*);
 lval*   builtin_init(lval*);
 lval*   builtin_len(lval*);
-lval*   builtin_cons(lval*, lval*);
+lval*   builtin_cons(lval*);
 
 // expression/expr.c
 lval*   lval_join(lval*, lval*);
@@ -74,7 +74,7 @@ lval*   lval_num(double);
 lval*   lval_err(char*);
 lval*   lval_sym(char*);
 lval*   lval_sexpr(void);
-lval*   lval_sexpr(void);
+lval*   lval_qexpr(void);
 lval*   lval_read_num(mpc_ast_t*);
 lval*   lval_read(mpc_ast_t*);
 lval*   lval_add(lval*, lval*);

@@ -66,8 +66,17 @@ lval* builtin_tail(lval* v) {
 }
 
 // 将num添加到v(Q-表达式)首位
-lval* builtin_cons(lval* v, lval* num) {
-    return NULL;
+// (cons 1 {2 3}) -> {1 2 3}
+lval* builtin_cons(lval* v) {
+    LASSERT(v, v->count == 2, 
+        "Function 'cons' must be two arguments!");
+    LASSERT(v, v->cell[1]->type == LVAL_QEXPR,
+        "Function 'cons' passed incorrect types!");
+    lval* x = lval_qexpr();
+    x = lval_add(x, lval_pop(v, 0));
+    x = lval_join(x, lval_pop(v, 0));
+    lval_del(v);
+    return x;
 }
 
 // 返回Q-表达式中的元素个数
@@ -105,6 +114,9 @@ lval* builtin(lval* v, char* func) {
     }
     if (strcmp("len", func) == 0) {
         return builtin_len(v);
+    }
+    if (strcmp("cons", func) == 0) {
+        return builtin_cons(v);
     }
     if (strstr("add+sub-div/mul*mod%pow^maxmin", func)) {
         return builtin_op(v, func);
