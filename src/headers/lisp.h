@@ -15,10 +15,14 @@
 #define	MAXLINE	4096			/* max line length */
 #define VERSION "0.0.0.0.0.3"   /* my lisp version */
 
+// for debug
 #define MPC_AST_PRINT 0x1
 
 #define DEBUG_VERBOSE_SET   0x1
 
+
+#define LASSERT(args, cond, err) \
+    if (!(cond)) { lval_del(args); return lval_err(err); }
 
 /*===================================data type===================================*/
 // {0, 1, 2, 3} lisp value type
