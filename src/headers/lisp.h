@@ -75,16 +75,15 @@ void    *Calloc(size_t nmemb, size_t size);
 void    Free(void *ptr);
 
 // operation/op.c
-lval*   builtin(lval*, char*);
 lval*   builtin_op(lenv*, lval*, char*);
-lval*   builtin_head(lval*);
-lval*   builtin_tail(lval*);
-lval*   builtin_list(lval*);
-lval*   builtin_eval(lval*);
-lval*   builtin_join(lval*);
-lval*   builtin_init(lval*);
-lval*   builtin_len(lval*);
-lval*   builtin_cons(lval*);
+lval*   builtin_head(lenv*, lval*);
+lval*   builtin_tail(lenv*, lval*);
+lval*   builtin_list(lenv*, lval*);
+lval*   builtin_eval(lenv*, lval*);
+lval*   builtin_join(lenv*, lval*);
+lval*   builtin_init(lenv*, lval*);
+lval*   builtin_len(lenv*, lval*);
+lval*   builtin_cons(lenv*, lval*);
 lval*   builtin_add(lenv*, lval*);
 lval*   builtin_sub(lenv*, lval*);
 lval*   builtin_mul(lenv*, lval*);

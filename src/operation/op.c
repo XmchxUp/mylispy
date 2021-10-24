@@ -1,13 +1,13 @@
 #include <headers/lisp.h>
 
 // list 接收一个或者多个参数的S-表达式，返回一个包含所有参数的Q-表达式
-lval* builtin_list(lval* v) {
+lval* builtin_list(lenv* e, lval* v) {
     v->type = LVAL_SEXPR;
     return v;
 }
 
 // join 接受一个或者多个Q-表达式，返回一个将其连在一起的Q-表达式
-lval* builtin_join(lval* v) {
+lval* builtin_join(lenv* e, lval* v) {
     for (int i = 0; i < v->count; i++) {
         LASSERT(v, v->cell[i]->type == LVAL_QEXPR,
             "Function 'head' passed incorrect types!");
@@ -24,18 +24,18 @@ lval* builtin_join(lval* v) {
 
 
 // eval 接受一个Q-表达式，将其看做一个S-表达式，并运行
-lval* builtin_eval(lval* v) {
+lval* builtin_eval(lenv* e, lval* v) {
     LASSERT(v, v->count == 1, 
         "Function 'head' passed too many arguments!");
     LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
         "Function 'head' passed incorrect types!");
     lval* a = lval_take(v, 0);
     a->type = LVAL_SEXPR;
-    return lval_eval(a);
+    return lval_eval(e, a);
 }
 
 // head 接受一个Q-表达式，返回一个包含其第一个元素的Q-表达式
-lval* builtin_head(lval* v) {
+lval* builtin_head(lenv* e, lval* v) {
     LASSERT(v, v->count == 1, 
         "Function 'head' passed too many arguments!");
     LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
@@ -51,7 +51,7 @@ lval* builtin_head(lval* v) {
 }
 
 // tail 接受一个Q-表达式，返回一个除首元素外的Q-表达式
-lval* builtin_tail(lval* v) {
+lval* builtin_tail(lenv* e, lval* v) {
     LASSERT(v, v->count == 1, 
         "Function 'tail' passed too many arguments!");
     LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
@@ -67,7 +67,7 @@ lval* builtin_tail(lval* v) {
 
 // 将num添加到v(Q-表达式)首位
 // (cons 1 {2 3}) -> {1 2 3}
-lval* builtin_cons(lval* v) {
+lval* builtin_cons(lenv* e, lval* v) {
     LASSERT(v, v->count == 2, 
         "Function 'cons' must be two arguments!");
     LASSERT(v, v->cell[1]->type == LVAL_QEXPR,
@@ -80,7 +80,7 @@ lval* builtin_cons(lval* v) {
 }
 
 // 返回Q-表达式中的元素个数
-lval* builtin_len(lval* v) {
+lval* builtin_len(lenv* e, lval* v) {
     LASSERT(v, v->count == 1, 
         "Function 'len' passed too many arguments!");
     LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
@@ -92,7 +92,7 @@ lval* builtin_len(lval* v) {
 }
 
 // 返回Q-表达式中除最后一个元素外的其他元素
-lval* builtin_init(lval* v) {
+lval* builtin_init(lenv* e, lval* v) {
     LASSERT(v, v->count == 1, 
         "Function 'init' passed too many arguments!");
     LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
@@ -131,38 +131,6 @@ lval* builtin_max(lenv* e, lval* v) {
 
 lval* builtin_min(lenv* e, lval* v) {
     return builtin_op(e, v, "max");
-}
-
-lval* builtin(lval* v, char* func) {
-    if (strcmp("list", func) == 0) {
-        return builtin_list(v);
-    }
-    if (strcmp("eval", func) == 0) {
-        return builtin_eval(v);
-    }
-    if (strcmp("join", func) == 0) {
-        return builtin_join(v);
-    }
-    if (strcmp("head", func) == 0) {
-        return builtin_head(v);
-    }
-    if (strcmp("tail", func) == 0) {
-        return builtin_tail(v);
-    }
-    if (strcmp("len", func) == 0) {
-        return builtin_len(v);
-    }
-    if (strcmp("cons", func) == 0) {
-        return builtin_cons(v);
-    }
-    if (strcmp("init", func) == 0) {
-        return builtin_init(v);
-    } 
-    if (strstr("add+sub-div/mul*mod%pow^maxmin", func)) {
-        return builtin_op(v, func);
-    }
-    lval_del(v);
-    return lval_err("Unknown Function!");
 }
 
 lval* builtin_op(lenv* e, lval* v, char* op) {

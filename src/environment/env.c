@@ -14,14 +14,14 @@ void lenv_del(lenv* e) {
         lval_del(e->vals[i]);
     }
     Free(e->syms);
-    lval_del(e->vals);
+    Free(e->vals);
     Free(e);
 }
 
 lval* lenv_get(lenv* e, lval* k) {
     for (int i = 0; i < e->count; i++) {
         if (strcmp(e->syms[i], k->sym) == 0) {
-            return lval_copy(e->val[i]);
+            return lval_copy(e->vals[i]);
         }
     }
     return lval_err("unbound symbol!");

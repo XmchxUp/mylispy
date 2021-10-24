@@ -178,7 +178,7 @@ lval* lval_eval(lenv* e, lval* v) {
     }
 
     if (v->type == LVAL_SEXPR) {
-        return lval_eval_sexpr(v);
+        return lval_eval_sexpr(e, v);
     }
     
     return v;
