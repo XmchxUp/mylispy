@@ -76,7 +76,7 @@ void    Free(void *ptr);
 
 // operation/op.c
 lval*   builtin(lval*, char*);
-lval*   builtin_op(lval*, char*);
+lval*   builtin_op(lenv*, lval*, char*);
 lval*   builtin_head(lval*);
 lval*   builtin_tail(lval*);
 lval*   builtin_list(lval*);
@@ -85,6 +85,13 @@ lval*   builtin_join(lval*);
 lval*   builtin_init(lval*);
 lval*   builtin_len(lval*);
 lval*   builtin_cons(lval*);
+lval*   buitlin_add(lenv*, lval*);
+lval*   buitlin_sub(lenv*, lval*);
+lval*   buitlin_mul(lenv*, lval*);
+lval*   buitlin_div(lenv*, lval*);
+lval*   buitlin_mod(lenv*, lval*);
+lval*   buitlin_max(lenv*, lval*);
+lval*   buitlin_min(lenv*, lval*);
 
 // expression/expr.c
 lval*   lval_join(lval*, lval*);
@@ -97,8 +104,8 @@ lval*   lval_func(lbuiltin);
 lval*   lval_read_num(mpc_ast_t*);
 lval*   lval_read(mpc_ast_t*);
 lval*   lval_add(lval*, lval*);
-lval*   lval_eval_sexpr(lval*);
-lval*   lval_eval(lval*);
+lval*   lval_eval_sexpr(lenv*, lval*);
+lval*   lval_eval(lenv*, lval*);
 lval*   lval_take(lval*, int);
 lval*   lval_pop(lval*, int);
 lval*   lval_copy(lval*);
@@ -110,6 +117,8 @@ lenv*   lenv_new(void);
 void    lenv_del(lenv*);
 lval*   lenv_get(lenv*, lval*);
 void    lenv_put(lenv*, lval*, lval*);
+void    lenv_add_builtin(lenv*, char*, lbuiltin);
+void    lenv_add_builtins(lenv*);
 
 // lib/debug.c
 uint64_t debug_printf(uint64_t open_set, const char *format, ...);

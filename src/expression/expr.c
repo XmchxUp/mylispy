@@ -139,45 +139,48 @@ lval* lval_add(lval* v, lval* x) {
     return v;
 }
 
-lval* lval_eval_sexpr(lval* v) {
-    // evaluate children
+lval* lval_eval_sexpr(lenv* e, lval* v) {
     for (int i = 0; i < v->count; i++) {
-        v->cell[i] = lval_eval(v->cell[i]);
+        v->cell[i] = lval_eval(e, v->cell[i]);
     }
 
-    // error checking
     for (int i = 0; i < v->count; i++) {
         if (v->cell[i]->type == LVAL_ERR) {
             return lval_take(v, i);
         }
     }
 
-    // empty expression
     if (v->count == 0) {
         return v;
     }
 
-    // signle expression
     if (v->count == 1) {
         return lval_take(v, 0);
     }
 
     lval* f = lval_pop(v, 0);
-    if (f->type != LVAL_SYM) {
+    if (f->type != LVAL_FUN) {
         lval_del(f);
         lval_del(v);
-        return lval_err("S-expression Does not start with symbol!");
+        return lval_err("first element is not a function");
     }
 
-    lval* result = builtin(v, f->sym);
+    lval* result = f->func(e, v);
     lval_del(f);
     return result;
 }
 
-lval* lval_eval(lval* v) {
+lval* lval_eval(lenv* e, lval* v) {
+    if (v->type == LVAL_SYM) {
+        lval* x = lenv_get(e, v);
+        lval_del(v);
+        return x;
+    }
+
     if (v->type == LVAL_SEXPR) {
         return lval_eval_sexpr(v);
     }
+    
     return v;
 }
 
@@ -340,4 +343,39 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     e->vals[lastIdx] = lval_copy(v);
     e->syms[lastIdx] = Malloc(strlen(k->sym) + 1);
     strcpy(e->syms[lastIdx], k->sym);
+}
+
+void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
+    lval* k = lval_sym(name);
+    lval* v = lval_func(func);
+    lenv_put(e, k, v);
+
+    lval_del(v);
+    lval_del(k);
+}
+
+void lenv_add_builtins(lenv* e) {
+    /* List Functions */
+    lenv_add_builtin(e, "list", builtin_list);
+    lenv_add_builtin(e, "head", builtin_head);
+    lenv_add_builtin(e, "tail", builtin_tail);
+    lenv_add_builtin(e, "eval", builtin_eval);
+    lenv_add_builtin(e, "join", builtin_join);
+    lenv_add_builtin(e, "len",  builtin_len);
+    lenv_add_builtin(e, "cons", builtin_cons);
+    lenv_add_builtin(e, "init", builtin_init);
+
+    /* Mathematical Functions */
+    lenv_add_builtin(e, "+", builtin_add);
+    lenv_add_builtin(e, "add", builtin_add);
+    lenv_add_builtin(e, "-", builtin_sub);
+    lenv_add_builtin(e, "sub", builtin_sub);
+    lenv_add_builtin(e, "*", builtin_mul);
+    lenv_add_builtin(e, "mul", builtin_mul);
+    lenv_add_builtin(e, "/", builtin_div);
+    lenv_add_builtin(e, "div", builtin_div);
+    lenv_add_builtin(e, "max", builtin_max);
+    lenv_add_builtin(e, "min", builtin_min);
+    lenv_add_builtin(e, "%", builtin_mod);
+    lenv_add_builtin(e, "mod", builtin_mod);
 }

@@ -105,6 +105,34 @@ lval* builtin_init(lval* v) {
     return a;
 }
 
+lval* buitlin_add(lenv* e, lval* v) {
+    return builtin_op(e, a, "+");
+}
+
+lval* buitlin_sub(lenv* e, lval* v) {
+    return builtin_op(e, a, "-");
+}
+
+lval* buitlin_mul(lenv* e, lval* v) {
+    return builtin_op(e, a, "*");
+}
+
+lval* buitlin_div(lenv* e, lval* v) {
+    return builtin_op(e, a, "/");
+}
+
+lval* buitlin_mod(lenv* e, lval* v) {
+    return builtin_op(e, a, "%");
+}
+
+lval* buitlin_max(lenv* e, lval* v) {
+    return builtin_op(e, a, "max");
+}
+
+lval* buitlin_min(lenv* e, lval* v) {
+    return builtin_op(e, a, "max");
+}
+
 lval* builtin(lval* v, char* func) {
     if (strcmp("list", func) == 0) {
         return builtin_list(v);
@@ -137,7 +165,7 @@ lval* builtin(lval* v, char* func) {
     return lval_err("Unknown Function!");
 }
 
-lval* builtin_op(lval* v, char* op) {
+lval* builtin_op(lenv* e, lval* v, char* op) {
     // ensure all arguments are numbers
     for (int i = 0; i < v->count; i++) {
         if (v->cell[i]->type != LVAL_NUM) {
