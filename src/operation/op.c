@@ -65,8 +65,8 @@ lval* builtin_tail(lenv* e, lval* v) {
     return a;
 }
 
-// 将num添加到v(Q-表达式)首位
-// (cons 1 {2 3}) -> {1 2 3}
+// 将元素arg1添加到arg2(Q-表达式)首位
+// (cons 1 {a 2 3}) -> {1 a 2 3}
 lval* builtin_cons(lenv* e, lval* v) {
     LASSERT(v, v->count == 2, 
         "Function 'cons' must be two arguments!");
