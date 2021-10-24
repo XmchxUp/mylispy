@@ -8,6 +8,12 @@
 #include <math.h>
 #include <headers/mpc.h>
 
+/*===================================forward declarations===================================*/
+struct lval;
+struct lenv;
+typedef struct lval lval;
+typedef struct lenv lenv;
+
 /*===================================define===================================*/
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
@@ -26,7 +32,10 @@
 
 /*===================================data type===================================*/
 // {0, 1, 2, 3} lisp value type
-enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
+enum { LVAL_ERR,  LVAL_NUM,   LVAL_SYM, 
+       LVAL_FUN,  LVAL_SEXPR, LVAL_QEXPR };
+
+typedef lval* (*lbuiltin)(lenv*, lval*);
 
 // lisp value
 typedef struct lval {
@@ -35,9 +44,10 @@ typedef struct lval {
     
     char* err;
     char* sym;
+    lbuiltin func;
     
     int count;
-    struct lval** cell;
+    lval** cell;
 } lval;
 
 /*===================================function===================================*/
@@ -75,6 +85,7 @@ lval*   lval_err(char*);
 lval*   lval_sym(char*);
 lval*   lval_sexpr(void);
 lval*   lval_qexpr(void);
+lval*   lval_func(lbuiltin func);
 lval*   lval_read_num(mpc_ast_t*);
 lval*   lval_read(mpc_ast_t*);
 lval*   lval_add(lval*, lval*);

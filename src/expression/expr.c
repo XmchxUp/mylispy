@@ -45,10 +45,18 @@ lval* lval_qexpr(void) {
     return v;
 }
 
+lval* lval_func(lbuiltin func) {
+    lval* v = Malloc(sizeof(lval));
+    v->type = LVAL_FUN;
+    v->func = func;
+    return v;
+}
+
 void lval_del(lval* lv) {
     switch (lv->type)
     {
-    case LVAL_NUM: 
+    case LVAL_FUN:
+    case LVAL_NUM:
         break;
     case LVAL_ERR:
         Free(lv->err);
@@ -233,6 +241,9 @@ void lval_print(lval* lv) {
         break;
     case LVAL_SYM:
         printf("%s", lv->sym);
+        break;
+    case LVAL_FUN:
+        printf("<function>");
         break;
     case LVAL_SEXPR:
         lval_expr_print(lv, '(', ')');
