@@ -108,6 +108,8 @@ void    lval_println(lval*);
 void    lval_expr_print(lval*, char, char);
 lenv*   lenv_new(void);
 void    lenv_del(lenv*);
+lval*   lenv_get(lenv*, lval*);
+void    lenv_put(lenv*, lval*, lval*);
 
 // lib/debug.c
 uint64_t debug_printf(uint64_t open_set, const char *format, ...);

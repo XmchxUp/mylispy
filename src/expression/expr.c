@@ -313,3 +313,31 @@ void lenv_del(lenv* e) {
     lval_del(e->vals);
     Free(e);
 }
+
+lval* lenv_get(lenv* e, lval* k) {
+    for (int i = 0; i < e->count; i++) {
+        if (strcmp(e->syms[i], k->sym) == 0) {
+            return lval_copy(e->val[i]);
+        }
+    }
+    return lval_err("unbound symbol!");
+}
+
+void lenv_put(lenv* e, lval* k, lval* v) {
+    for (int i = 0; i < e->count; i++) {
+        if (strcmp(e->syms[i], k->sym) == 0) {
+            lval_del(e->vals[i]);
+            e->vals[i] = lval_copy(v);
+            return;
+        }
+    }
+
+    e->count += 1;
+    e->vals = Realloc(e->vals, sizeof(lval*) * e->count);
+    e->syms = Realloc(e->syms, sizeof(lval*) * e->count);
+
+    int lastIdx = e->count - 1;
+    e->vals[lastIdx] = lval_copy(v);
+    e->syms[lastIdx] = Malloc(strlen(k->sym) + 1);
+    strcpy(e->syms[lastIdx], k->sym);
+}
