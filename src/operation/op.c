@@ -105,32 +105,32 @@ lval* builtin_init(lval* v) {
     return a;
 }
 
-lval* buitlin_add(lenv* e, lval* v) {
-    return builtin_op(e, a, "+");
+lval* builtin_add(lenv* e, lval* v) {
+    return builtin_op(e, v, "+");
 }
 
-lval* buitlin_sub(lenv* e, lval* v) {
-    return builtin_op(e, a, "-");
+lval* builtin_sub(lenv* e, lval* v) {
+    return builtin_op(e, v, "-");
 }
 
-lval* buitlin_mul(lenv* e, lval* v) {
-    return builtin_op(e, a, "*");
+lval* builtin_mul(lenv* e, lval* v) {
+    return builtin_op(e, v, "*");
 }
 
-lval* buitlin_div(lenv* e, lval* v) {
-    return builtin_op(e, a, "/");
+lval* builtin_div(lenv* e, lval* v) {
+    return builtin_op(e, v, "/");
 }
 
-lval* buitlin_mod(lenv* e, lval* v) {
-    return builtin_op(e, a, "%");
+lval* builtin_mod(lenv* e, lval* v) {
+    return builtin_op(e, v, "%");
 }
 
-lval* buitlin_max(lenv* e, lval* v) {
-    return builtin_op(e, a, "max");
+lval* builtin_max(lenv* e, lval* v) {
+    return builtin_op(e, v, "max");
 }
 
-lval* buitlin_min(lenv* e, lval* v) {
-    return builtin_op(e, a, "max");
+lval* builtin_min(lenv* e, lval* v) {
+    return builtin_op(e, v, "max");
 }
 
 lval* builtin(lval* v, char* func) {

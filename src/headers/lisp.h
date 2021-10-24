@@ -85,13 +85,13 @@ lval*   builtin_join(lval*);
 lval*   builtin_init(lval*);
 lval*   builtin_len(lval*);
 lval*   builtin_cons(lval*);
-lval*   buitlin_add(lenv*, lval*);
-lval*   buitlin_sub(lenv*, lval*);
-lval*   buitlin_mul(lenv*, lval*);
-lval*   buitlin_div(lenv*, lval*);
-lval*   buitlin_mod(lenv*, lval*);
-lval*   buitlin_max(lenv*, lval*);
-lval*   buitlin_min(lenv*, lval*);
+lval*   builtin_add(lenv*, lval*);
+lval*   builtin_sub(lenv*, lval*);
+lval*   builtin_mul(lenv*, lval*);
+lval*   builtin_div(lenv*, lval*);
+lval*   builtin_mod(lenv*, lval*);
+lval*   builtin_max(lenv*, lval*);
+lval*   builtin_min(lenv*, lval*);
 
 // expression/expr.c
 lval*   lval_join(lval*, lval*);
@@ -113,6 +113,8 @@ void    lval_del(lval* v);
 void    lval_print(lval*);
 void    lval_println(lval*);
 void    lval_expr_print(lval*, char, char);
+
+// environment/env.c
 lenv*   lenv_new(void);
 void    lenv_del(lenv*);
 lval*   lenv_get(lenv*, lval*);
