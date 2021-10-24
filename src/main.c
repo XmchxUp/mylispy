@@ -40,6 +40,7 @@ static mpc_parser_t* Sexpr;
 static mpc_parser_t* Qexpr;
 static mpc_parser_t* Expr;  
 static mpc_parser_t* Lispy;
+static lenv* e;
 
 static void print_vertion_info();
 static void create_parser();
@@ -50,6 +51,8 @@ int main(int argc, char** argv) {
 
     create_parser();
     print_vertion_info();
+    e = lenv_new();
+    lenv_add_builtins(e);
 
     while (1) {
         char* input = readline("doge>>> ");
@@ -58,6 +61,7 @@ int main(int argc, char** argv) {
         free(input);
     }
 
+    lenv_del(e);
     clean_parser();
     return 0;
 }
@@ -67,7 +71,7 @@ static void parse_input(char* input) {
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
         debug_mpc_ast_print(MPC_AST_PRINT, r.output);
-        lval* x = lval_eval(lval_read(r.output));
+        lval* x = lval_eval(e, lval_read(r.output));
         lval_println(x);
         lval_del(x);
         mpc_ast_delete(r.output);
