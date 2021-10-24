@@ -27,8 +27,12 @@ typedef struct lenv lenv;
 #define DEBUG_VERBOSE_SET   0x1
 
 
-#define LASSERT(args, cond, err) \
-    if (!(cond)) { lval_del(args); return lval_err(err); }
+#define LASSERT(args, cond, fmt, ...) \
+    if (!(cond)) { \
+        lval* err = lval_err(fmt, ##__VA_ARGS__); \
+        lval_del(args); \
+        return err; \
+    }
 
 /*===================================data type===================================*/
 // {0, 1, 2, 3} lisp value type
@@ -96,7 +100,7 @@ lval*   builtin_def(lenv*, lval*);
 // expression/expr.c
 lval*   lval_join(lval*, lval*);
 lval*   lval_num(double);
-lval*   lval_err(char*);
+lval*   lval_err(char* fmt, ...);
 lval*   lval_sym(char*);
 lval*   lval_sexpr(void);
 lval*   lval_qexpr(void);
@@ -109,6 +113,7 @@ lval*   lval_eval(lenv*, lval*);
 lval*   lval_take(lval*, int);
 lval*   lval_pop(lval*, int);
 lval*   lval_copy(lval*);
+char*   ltype_name(int t);
 void    lval_del(lval* v);
 void    lval_print(lval*);
 void    lval_println(lval*);

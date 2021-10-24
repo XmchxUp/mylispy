@@ -10,12 +10,20 @@ lval* lval_num(double x) {
 }
 
 /* Create a new error type lval */
-lval* lval_err(char* m) {
-    lval* res = Malloc(sizeof(lval));
-    res->type = LVAL_ERR;
-    res->err = Malloc(strlen(m) + 1);
-    strcpy(res->err, m);
-    return res;
+lval* lval_err(char* fmt, ...) {
+    lval* v = Malloc(sizeof(lval));
+    v->type = LVAL_ERR;
+
+    va_list va;
+    va_start(va, fmt);
+
+    v->err = Malloc(512);
+    vsnprintf(v->err, 511, fmt, va);
+    v->err = Realloc(v->err, strlen(v->err) + 1);
+
+    va_end(va);
+
+    return v;
 }
 
 /* Construct a pointer to a new Symbol lval */
@@ -297,4 +305,16 @@ lval* lval_join(lval* x, lval* y) {
 
     lval_del(y);
     return x;
+}
+
+char* ltype_name(int t) {
+  switch(t) {
+    case LVAL_FUN: return "Function";
+    case LVAL_NUM: return "Number";
+    case LVAL_ERR: return "Error";
+    case LVAL_SYM: return "Symbol";
+    case LVAL_SEXPR: return "S-Expression";
+    case LVAL_QEXPR: return "Q-Expression";
+    default: return "Unknown";
+  }
 }

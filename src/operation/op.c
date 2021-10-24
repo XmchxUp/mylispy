@@ -37,9 +37,13 @@ lval* builtin_eval(lenv* e, lval* v) {
 // head 接受一个Q-表达式，返回一个包含其第一个元素的Q-表达式
 lval* builtin_head(lenv* e, lval* v) {
     LASSERT(v, v->count == 1, 
-        "Function 'head' passed too many arguments!");
+        "Function 'head' passed too many arguments. "
+        "Got %i, Expected %i.",
+        v->count, 1);
     LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
-        "Function 'head' passed incorrect types!");
+        "Function 'head' passed incorrect type for argument 0."
+        "Got %s. Expected %s.",
+        ltype_name(v->cell[0]->type), ltype_name(LVAL_QEXPR));
     LASSERT(v, v->cell[0]->count != 0, 
         "Function 'head' passed {}!");
     

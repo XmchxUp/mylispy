@@ -25,7 +25,7 @@ lval* lenv_get(lenv* e, lval* k) {
             return lval_copy(e->vals[i]);
         }
     }
-    return lval_err("unbound symbol!");
+    return lval_err("unbound symbol! '%s'", k->sym);
 }
 
 // 更新或添加符号k的值
