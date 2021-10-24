@@ -9,8 +9,7 @@ lval* builtin_list(lenv* e, lval* v) {
 // join 接受一个或者多个Q-表达式，返回一个将其连在一起的Q-表达式
 lval* builtin_join(lenv* e, lval* v) {
     for (int i = 0; i < v->count; i++) {
-        LASSERT(v, v->cell[i]->type == LVAL_QEXPR,
-            "Function 'head' passed incorrect types!");
+        LASSERT_TYPE("join", v, i, LVAL_QEXPR);
     }
 
     lval* a = lval_pop(v, 0);
@@ -25,10 +24,8 @@ lval* builtin_join(lenv* e, lval* v) {
 
 // eval 接受一个Q-表达式，将其看做一个S-表达式，并运行
 lval* builtin_eval(lenv* e, lval* v) {
-    LASSERT(v, v->count == 1, 
-        "Function 'head' passed too many arguments!");
-    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
-        "Function 'head' passed incorrect types!");
+    LASSERT_NUM("eval", v, 1);
+    LASSERT_TYPE("eval", v, 0, LVAL_QEXPR);
     lval* a = lval_take(v, 0);
     a->type = LVAL_SEXPR;
     return lval_eval(e, a);
@@ -36,16 +33,9 @@ lval* builtin_eval(lenv* e, lval* v) {
 
 // head 接受一个Q-表达式，返回一个包含其第一个元素的Q-表达式
 lval* builtin_head(lenv* e, lval* v) {
-    LASSERT(v, v->count == 1, 
-        "Function 'head' passed too many arguments. "
-        "Got %i, Expected %i.",
-        v->count, 1);
-    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
-        "Function 'head' passed incorrect type for argument 0."
-        "Got %s. Expected %s.",
-        ltype_name(v->cell[0]->type), ltype_name(LVAL_QEXPR));
-    LASSERT(v, v->cell[0]->count != 0, 
-        "Function 'head' passed {}!");
+    LASSERT_NUM("head", v, 1);
+    LASSERT_TYPE("head", v, 0, LVAL_QEXPR);
+    LASSERT_NOT_EMPTY("head", v, 0);
     
     lval* a = lval_take(v, 0);
     while (a->count > 1) {
@@ -56,12 +46,9 @@ lval* builtin_head(lenv* e, lval* v) {
 
 // tail 接受一个Q-表达式，返回一个除首元素外的Q-表达式
 lval* builtin_tail(lenv* e, lval* v) {
-    LASSERT(v, v->count == 1, 
-        "Function 'tail' passed too many arguments!");
-    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
-        "Function 'tail' passed incorrect types!");
-    LASSERT(v, v->cell[0]->count != 0, 
-        "Function 'tail' passed {}!");
+    LASSERT_NUM("tail", v, 1);
+    LASSERT_TYPE("tail", v, 0, LVAL_QEXPR);
+    LASSERT_NOT_EMPTY("tail", v, 0);
 
     lval* a = lval_take(v, 0);
     
@@ -72,10 +59,8 @@ lval* builtin_tail(lenv* e, lval* v) {
 // 将元素arg1添加到arg2(Q-表达式)首位
 // (cons 1 {a 2 3}) -> {1 a 2 3}
 lval* builtin_cons(lenv* e, lval* v) {
-    LASSERT(v, v->count == 2, 
-        "Function 'cons' must be two arguments!");
-    LASSERT(v, v->cell[1]->type == LVAL_QEXPR,
-        "Function 'cons' passed incorrect types!");
+    LASSERT_NUM("cons", v, 2);
+    LASSERT_TYPE("cons", v, 1, LVAL_QEXPR);
     lval* x = lval_qexpr();
     x = lval_add(x, lval_pop(v, 0));
     x = lval_join(x, lval_pop(v, 0));
@@ -85,10 +70,8 @@ lval* builtin_cons(lenv* e, lval* v) {
 
 // 返回Q-表达式中的元素个数
 lval* builtin_len(lenv* e, lval* v) {
-    LASSERT(v, v->count == 1, 
-        "Function 'len' passed too many arguments!");
-    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
-        "Function 'len' passed incorrect types!");
+    LASSERT_NUM("len", v, 1);
+    LASSERT_TYPE("len", v, 0, LVAL_QEXPR);
 
     lval* res = lval_num(v->cell[0]->count);
     lval_del(v);
@@ -97,12 +80,9 @@ lval* builtin_len(lenv* e, lval* v) {
 
 // 返回Q-表达式中除最后一个元素外的其他元素
 lval* builtin_init(lenv* e, lval* v) {
-    LASSERT(v, v->count == 1, 
-        "Function 'init' passed too many arguments!");
-    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
-        "Function 'init' passed incorrect types!");
-    LASSERT(v, v->cell[0]->count != 0, 
-        "Function 'init' passed {}!");
+    LASSERT_NUM("init", v, 1);
+    LASSERT_TYPE("init", v, 0, LVAL_QEXPR);
+    LASSERT_NOT_EMPTY("init", v, 0);
 
     lval* a = lval_take(v, 0);
     lval_del(lval_pop(a, a->count - 1));
@@ -138,18 +118,20 @@ lval* builtin_min(lenv* e, lval* v) {
 }
 
 lval* builtin_def(lenv* e, lval* v) {
-    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
-        "Function 'def' passed incorrect type!");
+    LASSERT_TYPE("def", v, 0, LVAL_QEXPR);
 
     lval* syms = v->cell[0];
     for (int i = 0; i < syms->count; i++) {
-        LASSERT(v, syms->cell[i]->type == LVAL_SYM,
-            "Function 'def' cannot define non-symbol");
+        LASSERT(v, (syms->cell[i]->type == LVAL_SYM),
+            "Function 'def' cannot define non-symbol. "
+            "Got %s, Expected %s.",
+            ltype_name(syms->cell[i]->type), ltype_name(LVAL_SYM));
     }
 
-    LASSERT(v, syms->count == v->count - 1,
-        "Function 'def' cannot define incoreect "
-        "number of values to symbols");
+    LASSERT(v, (syms->count == v->count - 1),
+        "Function 'def' passed too many arguments for symbols. "
+        "Got %i, Expected %i.",
+        syms->count, v->count - 1);
     
     for (int i = 0; i < syms->count; i++) {
         lenv_put(e, syms->cell[i], v->cell[i + 1]);
@@ -162,10 +144,7 @@ lval* builtin_def(lenv* e, lval* v) {
 lval* builtin_op(lenv* e, lval* v, char* op) {
     // ensure all arguments are numbers
     for (int i = 0; i < v->count; i++) {
-        if (v->cell[i]->type != LVAL_NUM) {
-            lval_del(v);
-            return lval_err("Cannot operate on non-number!");
-        }
+        LASSERT_TYPE(op, v, i, LVAL_NUM);
     }
 
     lval* x = lval_pop(v, 0);
