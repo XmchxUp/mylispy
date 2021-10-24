@@ -69,10 +69,10 @@ void lval_del(lval* lv) {
         for (int i = 0; i < lv->count; i++) {
             lval_del(lv->cell[i]);
         }
-        free(lv->cell);
+        Free(lv->cell);
         break;
     }
-    free(lv);
+    Free(lv);
 }
 
 lval* lval_read_num(mpc_ast_t* t) {
@@ -200,7 +200,7 @@ lval* lval_pop(lval* v, int i) {
     if (v->count > 0)  {
         v->cell = Realloc(v->cell, sizeof(lval*) * v->count);
     } else {
-        free(v->cell);
+        Free(v->cell);
         v->cell = NULL;
     }
     return x;
@@ -306,10 +306,10 @@ lenv* lenv_new(void) {
 
 void lenv_del(lenv* e) {
     for (int i = 0; i < e->count; i++) {
-        free(e->syms[i]);
+        Free(e->syms[i]);
         lval_del(e->vals[i]);
     }
-    free(e->syms);
-    free(e->vals);
-    free(e);
+    Free(e->syms);
+    lval_del(e->vals);
+    Free(e);
 }
