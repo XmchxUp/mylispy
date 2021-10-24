@@ -87,12 +87,9 @@ static void create_parser() {
     Lispy         = mpc_new("lispy");
 
     mpca_lang(MPCA_LANG_DEFAULT,
-        "                                                                          \
-            number   : /-?\\d+([.]\\d+)?/ ;                                         \
-            symbol   : '+' | '-' | '*' | '/' | '%' | '^' |                           \
-                        \"add\" | \"sub\" | \"mul\" | \"div\" | \"mod\" | \"pow\" |  \"min\" | \"max\" |  \
-                        \"list\" | \"head\" | \"tail\" | \"join\" | \"eval\" |  \
-                        \"len\" | \"cons\" | \"init\" ;                          \
+        "                                                                      \
+            number   : /-?\\d+([.]\\d+)?/ ;                                     \
+            symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&]+/ ;                        \
             sexpr    : '(' <expr>* ')';                                           \
             qexpr    : '{' <expr>* '}';                                            \
             expr     : <number> | <symbol> | <sexpr> | <qexpr> ;                    \
