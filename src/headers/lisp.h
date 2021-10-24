@@ -91,6 +91,7 @@ lval*   builtin_div(lenv*, lval*);
 lval*   builtin_mod(lenv*, lval*);
 lval*   builtin_max(lenv*, lval*);
 lval*   builtin_min(lenv*, lval*);
+lval*   builtin_def(lenv*, lval*);
 
 // expression/expr.c
 lval*   lval_join(lval*, lval*);

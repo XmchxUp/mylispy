@@ -133,6 +133,28 @@ lval* builtin_min(lenv* e, lval* v) {
     return builtin_op(e, v, "max");
 }
 
+lval* builtin_def(lenv* e, lval* v) {
+    LASSERT(v, v->cell[0]->type == LVAL_QEXPR,
+        "Function 'def' passed incorrect type!");
+
+    lval* syms = v->cell[0];
+    for (int i = 0; i < syms->count; i++) {
+        LASSERT(v, syms->cell[i]->type == LVAL_SYM,
+            "Function 'def' cannot define non-symbol");
+    }
+
+    LASSERT(v, syms->count == v->count - 1,
+        "Function 'def' cannot define incoreect "
+        "number of values to symbols");
+    
+    for (int i = 0; i < syms->count; i++) {
+        lenv_put(e, syms->cell[i], v->cell[i + 1]);
+    }
+
+    lval_del(v);
+    return lval_sexpr();
+}
+
 lval* builtin_op(lenv* e, lval* v, char* op) {
     // ensure all arguments are numbers
     for (int i = 0; i < v->count; i++) {

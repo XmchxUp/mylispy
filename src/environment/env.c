@@ -18,6 +18,7 @@ void lenv_del(lenv* e) {
     Free(e);
 }
 
+// 返回符号k的值
 lval* lenv_get(lenv* e, lval* k) {
     for (int i = 0; i < e->count; i++) {
         if (strcmp(e->syms[i], k->sym) == 0) {
@@ -27,6 +28,7 @@ lval* lenv_get(lenv* e, lval* k) {
     return lval_err("unbound symbol!");
 }
 
+// 更新或添加符号k的值
 void lenv_put(lenv* e, lval* k, lval* v) {
     for (int i = 0; i < e->count; i++) {
         if (strcmp(e->syms[i], k->sym) == 0) {
@@ -56,6 +58,9 @@ void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
 }
 
 void lenv_add_builtins(lenv* e) {
+    /* Variable Functions */
+    lenv_add_builtin(e, "def",  builtin_def);
+
     /* List Functions */
     lenv_add_builtin(e, "list", builtin_list);
     lenv_add_builtin(e, "head", builtin_head);
