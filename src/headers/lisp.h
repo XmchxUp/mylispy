@@ -93,6 +93,7 @@ lval*   lval_eval_sexpr(lval*);
 lval*   lval_eval(lval*);
 lval*   lval_take(lval*, int);
 lval*   lval_pop(lval*, int);
+lval*   lval_copy(lval*);
 void    lval_del(lval* v);
 void    lval_print(lval*);
 void    lval_println(lval*);
