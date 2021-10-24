@@ -38,7 +38,7 @@ enum { LVAL_ERR,  LVAL_NUM,   LVAL_SYM,
 typedef lval* (*lbuiltin)(lenv*, lval*);
 
 // lisp value
-typedef struct lval {
+struct lval {
     int type;
     double num;
     
@@ -48,7 +48,15 @@ typedef struct lval {
     
     int count;
     lval** cell;
-} lval;
+};
+
+// Each entry in one list has a correspoiding entry in the other list at the same position
+// lisp environment
+struct lenv {
+    int count;
+    char** syms;
+    lval** vals;
+};
 
 /*===================================function===================================*/
 // lib/error.c
@@ -85,7 +93,7 @@ lval*   lval_err(char*);
 lval*   lval_sym(char*);
 lval*   lval_sexpr(void);
 lval*   lval_qexpr(void);
-lval*   lval_func(lbuiltin func);
+lval*   lval_func(lbuiltin);
 lval*   lval_read_num(mpc_ast_t*);
 lval*   lval_read(mpc_ast_t*);
 lval*   lval_add(lval*, lval*);
@@ -98,6 +106,8 @@ void    lval_del(lval* v);
 void    lval_print(lval*);
 void    lval_println(lval*);
 void    lval_expr_print(lval*, char, char);
+lenv*   lenv_new(void);
+void    lenv_del(lenv*);
 
 // lib/debug.c
 uint64_t debug_printf(uint64_t open_set, const char *format, ...);
