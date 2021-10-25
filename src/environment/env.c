@@ -48,6 +48,29 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     strcpy(e->syms[lastIdx], k->sym);
 }
 
+void print_env(lenv* e) {
+    for (int i = 0; i < e->count; i++) {
+        printf("%s: ", e->syms[i]);
+        lval_print(e->vals[i]);
+        putchar('\n');
+    }
+}
+
+void print_env_symbol(lenv* e) {
+    for (int i = 0; i < e->count; i++) {
+        printf("%s ", e->syms[i]);
+    }
+    putchar('\n');
+}
+
+void print_env_value(lenv* e) {
+    for (int i = 0; i < e->count; i++) {
+        lval_print(e->vals[i]);
+        putchar(' ');
+    }
+    putchar('\n');
+}
+
 void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
     lval* k = lval_sym(name);
     lval* v = lval_func(func);
@@ -58,10 +81,10 @@ void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
 }
 
 void lenv_add_builtins(lenv* e) {
-    /* Variable Functions */
+    
+    lenv_add_builtin(e, "symbol",  builtin_symbol);
     lenv_add_builtin(e, "def",  builtin_def);
 
-    /* List Functions */
     lenv_add_builtin(e, "list", builtin_list);
     lenv_add_builtin(e, "head", builtin_head);
     lenv_add_builtin(e, "tail", builtin_tail);
@@ -71,7 +94,6 @@ void lenv_add_builtins(lenv* e) {
     lenv_add_builtin(e, "cons", builtin_cons);
     lenv_add_builtin(e, "init", builtin_init);
 
-    /* Mathematical Functions */
     lenv_add_builtin(e, "+", builtin_add);
     lenv_add_builtin(e, "add", builtin_add);
     lenv_add_builtin(e, "-", builtin_sub);

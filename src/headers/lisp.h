@@ -110,6 +110,7 @@ lval*   builtin_mod(lenv*, lval*);
 lval*   builtin_max(lenv*, lval*);
 lval*   builtin_min(lenv*, lval*);
 lval*   builtin_def(lenv*, lval*);
+lval*   builtin_symbol(lenv*, lval*);
 
 // expression/expr.c
 lval*   lval_join(lval*, lval*);
@@ -140,6 +141,9 @@ lval*   lenv_get(lenv*, lval*);
 void    lenv_put(lenv*, lval*, lval*);
 void    lenv_add_builtin(lenv*, char*, lbuiltin);
 void    lenv_add_builtins(lenv*);
+void    print_env(lenv*);
+void    print_env_symbol(lenv*);
+void    print_env_value(lenv*);
 
 // lib/debug.c
 uint64_t debug_printf(uint64_t open_set, const char *format, ...);

@@ -141,6 +141,21 @@ lval* builtin_def(lenv* e, lval* v) {
     return lval_sexpr();
 }
 
+lval* builtin_symbol(lenv* e, lval* v) {
+    LASSERT_TYPE("symbol", v, 0, LVAL_NUM);
+    LASSERT_NUM("symbol", v, 1);
+    lval* x = v->cell[0];
+    if (x->num == 0) {
+        print_env_symbol(e);
+    } else if (x->num == 1) {
+        print_env_value(e);
+    } else {
+        print_env(e);
+    }
+    lval_del(v);
+    return lval_sexpr();
+}
+
 lval* builtin_op(lenv* e, lval* v, char* op) {
     // ensure all arguments are numbers
     for (int i = 0; i < v->count; i++) {
