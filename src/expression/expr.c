@@ -162,7 +162,8 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
         return v;
     }
 
-    if (v->count == 1) {
+    if (v->count == 1 && 
+        v->cell[0]->func != builtin_exit) {
         return lval_take(v, 0);
     }
 

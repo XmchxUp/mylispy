@@ -111,6 +111,7 @@ lval*   builtin_max(lenv*, lval*);
 lval*   builtin_min(lenv*, lval*);
 lval*   builtin_def(lenv*, lval*);
 lval*   builtin_symbol(lenv*, lval*);
+lval*   builtin_exit(lenv*, lval*);
 
 // expression/expr.c
 lval*   lval_join(lval*, lval*);

@@ -156,6 +156,12 @@ lval* builtin_symbol(lenv* e, lval* v) {
     return lval_sexpr();
 }
 
+lval* builtin_exit(lenv* e, lval* v) {
+    printf("Bye~~\n");
+    exit(EXIT_SUCCESS);
+    return lval_sexpr();
+}
+
 lval* builtin_op(lenv* e, lval* v, char* op) {
     // ensure all arguments are numbers
     for (int i = 0; i < v->count; i++) {

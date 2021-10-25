@@ -83,6 +83,7 @@ void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
 void lenv_add_builtins(lenv* e) {
     
     lenv_add_builtin(e, "symbol",  builtin_symbol);
+    lenv_add_builtin(e, "exit",  builtin_exit);
     lenv_add_builtin(e, "def",  builtin_def);
 
     lenv_add_builtin(e, "list", builtin_list);
