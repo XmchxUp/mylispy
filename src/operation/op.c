@@ -118,14 +118,23 @@ lval* builtin_min(lenv* e, lval* v) {
 }
 
 lval* builtin_def(lenv* e, lval* v) {
-    LASSERT_TYPE("def", v, 0, LVAL_QEXPR);
+    return builtin_var(e, v, "def");
+}
+
+lval* builtin_put(lenv* e, lval* v) {
+    return builtin_var(e, v, "=");
+}
+
+lval* builtin_var(lenv* e, lval* v, char* func) {
+    LASSERT_TYPE(func, v, 0, LVAL_QEXPR);
 
     lval* syms = v->cell[0];
     for (int i = 0; i < syms->count; i++) {
         LASSERT(v, (syms->cell[i]->type == LVAL_SYM),
             "Function 'def' cannot define non-symbol. "
             "Got %s, Expected %s.",
-            ltype_name(syms->cell[i]->type), ltype_name(LVAL_SYM));
+            ltype_name(syms->cell[i]->type), 
+            ltype_name(LVAL_SYM));
     }
 
     LASSERT(v, (syms->count == v->count - 1),
@@ -134,7 +143,13 @@ lval* builtin_def(lenv* e, lval* v) {
         syms->count, v->count - 1);
     
     for (int i = 0; i < syms->count; i++) {
-        lenv_put(e, syms->cell[i], v->cell[i + 1]);
+        if (strcmp(func, "def") == 0) { // global
+            lenv_def(e, syms->cell[i], v->cell[i + 1]);
+        }
+
+        if (strcmp(func, "=") == 0) { // local
+            lenv_put(e, syms->cell[i], v->cell[i + 1]);
+        }
     }
 
     lval_del(v);
@@ -160,6 +175,25 @@ lval* builtin_exit(lenv* e, lval* v) {
     printf("Bye~~\n");
     exit(EXIT_SUCCESS);
     return lval_sexpr();
+}
+
+lval* builtin_lambda(lenv* e, lval* v) {
+    LASSERT_NUM("lambda", v, 2);
+    LASSERT_TYPE("lambda", v, 0, LVAL_QEXPR);
+    LASSERT_TYPE("lambda", v, 1, LVAL_QEXPR);
+
+    // 检测形参为symbol
+    for (int i = 0; i < v->cell[0]->count; i++) {
+        LASSERT(v, (v->cell[0]->cell[i]->type == LVAL_SYM), 
+            "Cannot define non-symbol. Got %s, Expected %s.",
+            ltype_name(v->cell[0]->cell[i]->type), ltype_name(LVAL_SYM));
+    }
+
+    lval* formals = lval_pop(v, 0);
+    lval* body = lval_pop(v, 0);
+    
+    lval_del(v);
+    return lval_lambda(formals, body);
 }
 
 lval* builtin_op(lenv* e, lval* v, char* op) {

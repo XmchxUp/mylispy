@@ -56,7 +56,19 @@ lval* lval_qexpr(void) {
 lval* lval_func(lbuiltin func) {
     lval* v = Malloc(sizeof(lval));
     v->type = LVAL_FUN;
-    v->func = func;
+    v->builtin = func;
+    return v;
+}
+
+lval* lval_lambda(lval* formals, lval* body) {
+    lval* v = Malloc(sizeof(lval));
+    v->type = LVAL_FUN;
+
+    v->builtin = NULL;
+
+    v->env = lenv_new();
+    v->formals = formals;
+    v->body = body;
     return v;
 }
 
@@ -64,6 +76,12 @@ void lval_del(lval* lv) {
     switch (lv->type)
     {
     case LVAL_FUN:
+        if (!lv->builtin) {
+            lenv_del(lv->env);
+            lval_del(lv->formals);
+            lval_del(lv->body);
+        }
+        break;
     case LVAL_NUM:
         break;
     case LVAL_ERR:
@@ -162,19 +180,24 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
         return v;
     }
 
-    if (v->count == 1 && 
-        v->cell[0]->func != builtin_exit) {
+    if (v->count == 1 &&
+        v->cell[0]->builtin != NULL &&
+        v->cell[0]->builtin != builtin_exit) {
         return lval_take(v, 0);
     }
 
     lval* f = lval_pop(v, 0);
     if (f->type != LVAL_FUN) {
-        lval_del(f);
+        lval* err = lval_err(
+            "S-Expression starts with incorrect type. "
+            "Got %s, Expected %s.",
+            ltype_name(f->type), ltype_name(LVAL_FUN));
+        lval_del(f); 
         lval_del(v);
-        return lval_err("first element is not a function");
+        return err;
     }
 
-    lval* result = f->func(e, v);
+    lval* result = lval_call(e, f, v);
     lval_del(f);
     return result;
 }
@@ -191,6 +214,40 @@ lval* lval_eval(lenv* e, lval* v) {
     }
     
     return v;
+}
+
+lval* lval_call(lenv* e, lval* f, lval* a) {
+    if (f->builtin) {
+        return f->builtin(e, a);
+    }
+
+    int given = a->count;
+    int total = f->formals->count;
+
+    while (a->count) {
+        if (f->formals->count == 0) {
+            lval_del(a);
+            return lval_err(
+                "Function passed too many arguments"
+                "Got %i, Expected %i.", given, total);
+        }
+
+        lval* sym = lval_pop(f->formals, 0);
+        lval* val = lval_pop(a, 0);
+        lenv_put(f->env, sym, val);
+
+        lval_del(val);
+        lval_del(sym);
+    }
+
+    lval_del(a);
+    if (f->formals->count == 0) {
+        f->env->par = e;
+        return builtin_eval(f->env, 
+            lval_add(lval_sexpr(), lval_copy(f->body)));
+    } else {
+        return lval_copy(f);
+    }
 }
 
 lval* lval_pop(lval* v, int i) {
@@ -231,7 +288,14 @@ lval* lval_copy(lval* v) {
     switch (x->type)
     {
     case LVAL_FUN:
-        x->func = v->func;
+        if (v->builtin) {
+            x->builtin = v->builtin;
+        } else {
+            x->builtin = NULL;
+            x->env = lenv_copy(v->env);
+            x->formals = lval_copy(v->formals);
+            x->body = lval_copy(v->body);
+        }
         break;
     case LVAL_NUM:
         x->num = v->num;
@@ -288,7 +352,15 @@ void lval_print(lval* lv) {
         printf("%s", lv->sym);
         break;
     case LVAL_FUN:
-        printf("<function>");
+        if (lv->builtin) {
+            printf("<builtin>");
+        } else {
+            printf("(lambda "); 
+            lval_print(lv->formals);
+            putchar(' ');
+            lval_print(lv->body);
+            putchar(')');
+        }
         break;
     case LVAL_SEXPR:
         lval_expr_print(lv, '(', ')');

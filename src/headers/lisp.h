@@ -19,12 +19,12 @@ typedef struct lenv lenv;
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 #define	MAXLINE	4096			/* max line length */
-#define VERSION "0.0.0.0.0.5"   /* my lisp version */
+#define VERSION "0.0.0.0.0.6"   /* my lisp version */
 
 // for debug
 #define MPC_AST_PRINT 0x1
 
-#define DEBUG_VERBOSE_SET   0x1
+#define DEBUG_VERBOSE_SET   0x0
 
 
 #define LASSERT(args, cond, fmt, ...) \
@@ -55,15 +55,21 @@ enum { LVAL_ERR,  LVAL_NUM,   LVAL_SYM,
 
 typedef lval* (*lbuiltin)(lenv*, lval*);
 
-// lisp value
 struct lval {
     int type;
+
+    /* Basic */
     double num;
-    
     char* err;
     char* sym;
-    lbuiltin func;
+
+    /* Function */
+    lbuiltin builtin;
+    lenv* env;
+    lval* formals;
+    lval* body;
     
+    /* Expression */
     int count;
     lval** cell;
 };
@@ -71,6 +77,7 @@ struct lval {
 // Each entry in one list has a correspoiding entry in the other list at the same position
 // lisp environment
 struct lenv {
+    lenv* par;
     int count;
     char** syms;
     lval** vals;
@@ -94,6 +101,7 @@ void    Free(void *ptr);
 
 // operation/op.c
 lval*   builtin_op(lenv*, lval*, char*);
+lval*   builtin_var(lenv*, lval*, char*);
 lval*   builtin_head(lenv*, lval*);
 lval*   builtin_tail(lenv*, lval*);
 lval*   builtin_list(lenv*, lval*);
@@ -110,8 +118,10 @@ lval*   builtin_mod(lenv*, lval*);
 lval*   builtin_max(lenv*, lval*);
 lval*   builtin_min(lenv*, lval*);
 lval*   builtin_def(lenv*, lval*);
+lval*   builtin_put(lenv*, lval*);
 lval*   builtin_symbol(lenv*, lval*);
 lval*   builtin_exit(lenv*, lval*);
+lval*   builtin_lambda(lenv*, lval*);
 
 // expression/expr.c
 lval*   lval_join(lval*, lval*);
@@ -121,6 +131,7 @@ lval*   lval_sym(char*);
 lval*   lval_sexpr(void);
 lval*   lval_qexpr(void);
 lval*   lval_func(lbuiltin);
+lval*   lval_lambda(lval*, lval*);
 lval*   lval_read_num(mpc_ast_t*);
 lval*   lval_read(mpc_ast_t*);
 lval*   lval_add(lval*, lval*);
@@ -134,12 +145,15 @@ void    lval_del(lval* v);
 void    lval_print(lval*);
 void    lval_println(lval*);
 void    lval_expr_print(lval*, char, char);
+lval*   lval_call(lenv*, lval*, lval*);
 
 // environment/env.c
 lenv*   lenv_new(void);
+lenv*   lenv_copy(lenv*);
 void    lenv_del(lenv*);
 lval*   lenv_get(lenv*, lval*);
 void    lenv_put(lenv*, lval*, lval*);
+void    lenv_def(lenv*, lval*, lval*);
 void    lenv_add_builtin(lenv*, char*, lbuiltin);
 void    lenv_add_builtins(lenv*);
 void    print_env(lenv*);
