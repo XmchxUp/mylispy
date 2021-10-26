@@ -1,6 +1,6 @@
 #include <headers/lisp.h>
 
-// list 接收一个或者多个参数的S-表达式，返回一个包含所有参数的Q-表达式
+// list 接收一个或者多个S-表达式，返回一个包含所有参数的Q-表达式
 lval* builtin_list(lenv* e, lval* v) {
     v->type = LVAL_SEXPR;
     return v;
