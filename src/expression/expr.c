@@ -1,5 +1,11 @@
-#include <headers/lisp.h>
 #include <float.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include <headers/lisp.h>
+#include <headers/env.h>
+#include <headers/op.h>
+#include <headers/expr.h>
 
 /* Create a new number type lval */
 lval* lval_num(double x) {

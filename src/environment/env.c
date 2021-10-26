@@ -1,4 +1,8 @@
+#include <string.h>
 #include <headers/lisp.h>
+#include <headers/expr.h>
+#include <headers/op.h>
+#include <headers/env.h>
 
 lenv* lenv_new(void) {
     lenv* e = Malloc(sizeof(lenv));

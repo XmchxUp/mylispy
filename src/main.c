@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <headers/mpc.h>
 #include <headers/lisp.h>
+#include <headers/env.h>
+#include <headers/expr.h>
+#include <headers/op.h>
 
 /* comipling on windows */
 #ifdef _WIN32
@@ -108,5 +112,5 @@ static void clean_parser() {
 
 static void print_vertion_info() {
     printf("XM's Lispy Version %s\n", VERSION);
-    printf("Press Ctrl+c to Exit\n\n");
+    printf("Type exit or Press Ctrl+c to Exit\n\n");
 }

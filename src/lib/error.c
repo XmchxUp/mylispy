@@ -1,6 +1,6 @@
-#include "headers/lisp.h"
 #include <errno.h>		/* for definition of errno */
 #include <stdarg.h>		/* ISO C variable aruments */
+#include <headers/lisp.h>
 
 static void	err_doit(int, int, const char *, va_list);
 
