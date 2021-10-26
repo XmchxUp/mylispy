@@ -2,7 +2,7 @@
 
 // list 接收一个或者多个S-表达式，返回一个包含所有参数的Q-表达式
 lval* builtin_list(lenv* e, lval* v) {
-    v->type = LVAL_SEXPR;
+    v->type = LVAL_QEXPR;
     return v;
 }
 
