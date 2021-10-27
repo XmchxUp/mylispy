@@ -125,6 +125,7 @@ void lenv_add_builtins(lenv* e) {
     lenv_add_builtin(e, "head", builtin_head);
     lenv_add_builtin(e, "second", builtin_second);
     lenv_add_builtin(e, "car", builtin_car);
+    lenv_add_builtin(e, "cdr", builtin_cdr);
     lenv_add_builtin(e, "tail", builtin_tail);
     lenv_add_builtin(e, "eval", builtin_eval);
     lenv_add_builtin(e, "join", builtin_join);

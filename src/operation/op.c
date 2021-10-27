@@ -58,19 +58,25 @@ lval* builtin_second(lenv* e, lval* v) {
     while (a->count > 2) {
         lval_del(lval_pop(a, 2));
     }
-    
+
     lval_del(lval_pop(a, 0));
     return a;
 }
 
 // car 接受一个列表，返回列表中的第一个元素
+lval* builtin_cdr(lenv* e, lval* v) {
+    LASSERT_NUM("cdr", v, 1);
+    LASSERT_TYPE("cdr", v, 0, LVAL_QEXPR);
+    
+    lval* a = lval_take(v, 0);
+    lval_del(lval_pop(a, 0));
+    return a;
+}
+
+// cdr 接受一个列表，返回列表中，除去第一个元素剩余的列表
 lval* builtin_car(lenv* e, lval* v) {
     LASSERT_NUM("car", v, 1);
     LASSERT_TYPE("car", v, 0, LVAL_QEXPR);
-    
-    if (v->cell[0]->count == 0) {
-        return lval_qexpr();
-    }
 
     lval* a = lval_take(v, 0);
     while (a->count > 1) {

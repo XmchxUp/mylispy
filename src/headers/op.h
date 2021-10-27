@@ -6,6 +6,7 @@ lval*   builtin_var(lenv*, lval*, char*);
 lval*   builtin_head(lenv*, lval*);
 lval*   builtin_second(lenv*, lval*);
 lval*   builtin_car(lenv*, lval*);
+lval*   builtin_cdr(lenv*, lval*);
 lval*   builtin_tail(lenv*, lval*);
 lval*   builtin_list(lenv*, lval*);
 lval*   builtin_eval(lenv*, lval*);
