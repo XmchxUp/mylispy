@@ -41,7 +41,7 @@ typedef struct lval lval;
 // for debug
 #define MPC_AST_PRINT 0x1
 
-#define DEBUG_VERBOSE_SET   0x0
+#define DEBUG_VERBOSE_SET   0x1
 
 /*===================================data type===================================*/
 enum { LVAL_ERR,  LVAL_NUM,   LVAL_SYM, 

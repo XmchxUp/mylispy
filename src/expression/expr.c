@@ -186,10 +186,9 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
         return v;
     }
 
-    if (v->count == 1 &&
-        v->cell[0]->builtin != NULL &&
+    if (v->count == 1 && 
         v->cell[0]->builtin != builtin_exit) {
-        return lval_take(v, 0);
+        return lval_eval(e, lval_take(v, 0));
     }
 
     lval* f = lval_pop(v, 0);
