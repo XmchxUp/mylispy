@@ -48,6 +48,22 @@ lval* builtin_head(lenv* e, lval* v) {
     return a;
 }
 
+// car 接受一个列表，返回列表中的第一个元素
+lval* builtin_car(lenv* e, lval* v) {
+    LASSERT_NUM("car", v, 1);
+    LASSERT_TYPE("car", v, 0, LVAL_QEXPR);
+    
+    if (v->cell[0]->count == 0) {
+        return lval_qexpr();
+    }
+
+    lval* a = lval_take(v, 0);
+    while (a->count > 1) {
+        lval_del(lval_pop(a, 1));
+    }
+    return a;
+}
+
 // tail 接受一个Q-表达式，返回一个除首元素外的Q-表达式
 lval* builtin_tail(lenv* e, lval* v) {
     LASSERT_NUM("tail", v, 1);
