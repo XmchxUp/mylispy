@@ -48,6 +48,21 @@ lval* builtin_head(lenv* e, lval* v) {
     return a;
 }
 
+// second 接受一个Q-表达式，返回包含其第二个元素的Q-表达式
+lval* builtin_second(lenv* e, lval* v) {
+    LASSERT_NUM("second", v, 1);
+    LASSERT_TYPE("second", v, 0, LVAL_QEXPR);
+    
+    lval* a = lval_take(v, 0);
+
+    while (a->count > 2) {
+        lval_del(lval_pop(a, 2));
+    }
+    
+    lval_del(lval_pop(a, 0));
+    return a;
+}
+
 // car 接受一个列表，返回列表中的第一个元素
 lval* builtin_car(lenv* e, lval* v) {
     LASSERT_NUM("car", v, 1);
