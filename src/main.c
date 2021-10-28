@@ -97,7 +97,7 @@ static void create_parser() {
     mpca_lang(MPCA_LANG_DEFAULT,
         "                                                                      \
             number   : /-?\\d+([.]\\d+)?/ ;                                     \
-            symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&%|]+/ ;                      \
+            symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&%|#]+/ ;                      \
             sexpr    : '(' <expr>* ')';                                           \
             qexpr    : '{' <expr>* '}';                                            \
             expr     : <number> | <symbol> | <sexpr> | <qexpr> ;                    \

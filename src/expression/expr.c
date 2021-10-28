@@ -41,6 +41,13 @@ lval* lval_sym(char* s) {
     return res;
 }
 
+lval* lval_bool(double x) {
+    lval* res = Malloc(sizeof(lval));
+    res->type = LVAL_BOOL;
+    res->num = x;
+    return res;
+}
+
 /* A pointer to a new empty Sexpr lval */
 lval* lval_sexpr(void) {
   lval* v = Malloc(sizeof(lval));
@@ -88,6 +95,7 @@ void lval_del(lval* lv) {
             lval_del(lv->body);
         }
         break;
+    case LVAL_BOOL:
     case LVAL_NUM:
         break;
     case LVAL_ERR:
@@ -297,6 +305,7 @@ int lval_eq(lval* x, lval* y) {
     }
 
     switch (x->type) {
+        case LVAL_BOOL:
         case LVAL_NUM: 
             return (x->num == y->num);
         case LVAL_ERR:
@@ -374,6 +383,7 @@ lval* lval_copy(lval* v) {
             x->body = lval_copy(v->body);
         }
         break;
+    case LVAL_BOOL:
     case LVAL_NUM:
         x->num = v->num;
         break;
@@ -417,6 +427,13 @@ void lval_println(lval* x) {
 void lval_print(lval* lv) {
     switch (lv->type)
     {
+    case LVAL_BOOL:
+        if (lv->num) {
+            printf("#true");
+        } else {
+            printf("#false");
+        }
+        break;
     case LVAL_NUM:
         // 去掉尾随零位g, 并调整精度 
         // https://stackoverflow.com/questions/66039239/is-there-a-way-to-automatically-printf-a-float-to-the-number-of-decimal-places-i
@@ -465,6 +482,7 @@ char* ltype_name(int t) {
     case LVAL_SYM: return "Symbol";
     case LVAL_SEXPR: return "S-Expression";
     case LVAL_QEXPR: return "Q-Expression";
+    case LVAL_BOOL: return "Boolean";
     default: return "Unknown";
   }
 }

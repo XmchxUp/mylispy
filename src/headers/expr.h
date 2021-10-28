@@ -5,6 +5,7 @@ lval*   lval_join(lval*, lval*);
 lval*   lval_num(double);
 lval*   lval_err(char* fmt, ...);
 lval*   lval_sym(char*);
+lval*   lval_bool(double);
 lval*   lval_sexpr(void);
 lval*   lval_qexpr(void);
 lval*   lval_func(lbuiltin);

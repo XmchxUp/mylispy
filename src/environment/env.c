@@ -113,6 +113,15 @@ void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
 }
 
 void lenv_add_builtins(lenv* e) {
+    lval* v_true = lval_num(TRUE);
+    lval* f_true = lval_sym("#true");
+
+    lval* v_false = lval_num(FALSE);
+    lval* f_false = lval_sym("#false");
+
+    lenv_def(e, f_true, v_true);
+    lenv_def(e, f_false, v_false);
+    
 
     lenv_add_builtin(e, "if", builtin_if);
     lenv_add_builtin(e, "==", builtin_eq);

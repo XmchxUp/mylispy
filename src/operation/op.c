@@ -378,7 +378,7 @@ lval* builtin_not(lenv* e, lval* v) {
 
     int r = !(v->cell[0]->num);
     lval_del(v);
-    return lval_num((double) r);
+    return lval_bool((double) r);
 }
 
 lval* builtin_logic(lenv* e, lval* v, char* op) {
@@ -400,5 +400,5 @@ lval* builtin_logic(lenv* e, lval* v, char* op) {
     }
 
     lval_del(v);
-    return lval_num((double) r);
+    return lval_bool((double) r);
 }

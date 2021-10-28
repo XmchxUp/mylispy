@@ -44,8 +44,11 @@ typedef struct lval lval;
 #define DEBUG_VERBOSE_SET   0x1
 
 /*===================================data type===================================*/
-enum { LVAL_ERR,  LVAL_NUM,   LVAL_SYM, 
-       LVAL_FUN,  LVAL_SEXPR, LVAL_QEXPR };
+#define TRUE    1
+#define FALSE   0
+
+enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_BOOL,
+       LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };
 
 typedef lval* (*lbuiltin)(lenv*, lval*);
 
