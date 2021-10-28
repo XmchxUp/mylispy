@@ -341,7 +341,7 @@ lval* builtin_cmp(lenv* e, lval* v, char* op) {
         r = !lval_eq(v->cell[0], v->cell[1]);
     }
     lval_del(v);
-    return lval_num((double)r);
+    return lval_num((double) r);
 }
 
 lval* builtin_if(lenv* e, lval* v) {
@@ -362,4 +362,43 @@ lval* builtin_if(lenv* e, lval* v) {
 
     lval_del(v);
     return x;
+}
+
+lval* builtin_and(lenv* e, lval* v) {
+    return builtin_logic(e, v, "&&");
+}
+
+lval* builtin_or(lenv* e, lval* v) {
+    return builtin_logic(e, v, "||");
+}
+
+lval* builtin_not(lenv* e, lval* v) {
+    LASSERT_NUM("not", v, 1);
+    LASSERT_TYPE("not", v, 0, LVAL_NUM);
+
+    int r = !(v->cell[0]->num);
+    lval_del(v);
+    return lval_num((double) r);
+}
+
+lval* builtin_logic(lenv* e, lval* v, char* op) {
+    for (int i = 0; i < v->count; i++) {
+        LASSERT_TYPE(op, v, i, LVAL_NUM);
+    }
+
+    int r = -1;
+    if (strcmp(op, "&&") == 0) {
+        r = 1;
+        for (int i = 0; i < v->count; i++) {
+            r = (r && (v->cell[i]->num));
+        }
+    } else if (strcmp(op, "||") == 0) {
+        r = 0;
+        for (int i = 0; i < v->count; i++) {
+            r = (r || (v->cell[i]->num));
+        }
+    }
+
+    lval_del(v);
+    return lval_num((double) r);
 }

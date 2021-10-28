@@ -121,6 +121,12 @@ void lenv_add_builtins(lenv* e) {
     lenv_add_builtin(e, "<",  builtin_lt);
     lenv_add_builtin(e, ">=", builtin_ge);
     lenv_add_builtin(e, "<=", builtin_le);
+    lenv_add_builtin(e, "!", builtin_not);
+    lenv_add_builtin(e, "not", builtin_not);
+    lenv_add_builtin(e, "&&", builtin_and);
+    lenv_add_builtin(e, "and", builtin_and);
+    lenv_add_builtin(e, "||", builtin_or);
+    lenv_add_builtin(e, "or", builtin_or);
     
     lenv_add_builtin(e, "symbol", builtin_symbol);
     lenv_add_builtin(e, "exit", builtin_exit);

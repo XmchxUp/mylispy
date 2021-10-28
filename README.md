@@ -9,6 +9,7 @@ make
 
 Example:
 ```lisp
+Demo1:
 (+ 1 1)
 (symbol 0) ;;; print symbol
 (symbol 1) ;;; print value
@@ -19,6 +20,23 @@ tail {a b c} ;;; c
 join {3} {a} {d} ;;; {3 a d}
 len {a b c {d f}} ;;; 4
 cons {a} {b} ;;; {a b}
+```
+
+```lisp
+Demo2:
+\ {args body} {def (head args) (\ (tail args) body)}
+def {fun} (\ {args body} {def (head args) (\ (tail args) body)})
+fun {add-together x y} {+ x y} ;;; add-together 1 2 --> 3
+(fun {len l} {
+  if (== l {})
+    {0}
+    {+ 1 (len (tail l))}
+}) ;;; len {a b c d} --> 4
+(fun {reverse l} {
+  if (== l {})
+    {{}}
+    {join (reverse (tail l)) (head l)}
+}) ;;; reverse {a b c d} --> {d c b a}
 ```
 
 Builtin Operation:
