@@ -25,7 +25,6 @@ lval* builtin_join(lenv* e, lval* v) {
     return a;
 }
 
-
 // eval 接受一个Q-表达式，将其看做一个S-表达式，并运行
 lval* builtin_eval(lenv* e, lval* v) {
     LASSERT_NUM("eval", v, 1);
@@ -285,5 +284,82 @@ lval* builtin_op(lenv* e, lval* v, char* op) {
     }
 
     lval_del(v); 
+    return x;
+}
+
+lval* builtin_gt(lenv* e, lval* v) {
+    return builtin_ord(e, v, ">");
+}
+
+lval* builtin_lt(lenv* e, lval* v) {
+    return builtin_ord(e, v, "<");
+}
+
+lval* builtin_ge(lenv* e, lval* v) {
+    return builtin_ord(e, v, ">=");
+}
+
+lval* builtin_le(lenv* e, lval* v) {
+    return builtin_ord(e, v, "<=");
+}
+
+lval* builtin_ord(lenv* e, lval* v, char* op) {
+    LASSERT_NUM(op, v, 2);
+    LASSERT_TYPE(op, v, 0, LVAL_NUM);
+    LASSERT_TYPE(op, v, 1, LVAL_NUM);
+
+    int r = 0;
+    if (strcmp(op, ">") == 0) {
+        r = (v->cell[0]->num > v->cell[1]->num);
+    } else if (strcmp(op, ">=") == 0) {
+        r = (v->cell[0]->num >= v->cell[1]->num);
+    } else if (strcmp(op, "<") == 0) {
+        r = (v->cell[0]->num < v->cell[1]->num);
+    } else if (strcmp(op, "<=") == 0) {
+        r = (v->cell[0]->num <= v->cell[1]->num);
+    }
+
+    lval_del(v);
+    return lval_num((double)r);
+}
+
+lval* builtin_eq(lenv* e, lval* v) {
+    return builtin_cmp(e, v, "==");
+}
+
+lval* builtin_ne(lenv* e, lval* v) {
+    return builtin_cmp(e, v, "!=");
+}
+
+lval* builtin_cmp(lenv* e, lval* v, char* op) {
+    LASSERT_NUM(op, v, 2);
+
+    int r = 0;
+    if (strcmp(op, "==") == 0) {
+        r = lval_eq(v->cell[0], v->cell[1]);
+    } else if (strcmp(op, "!=") == 0) {
+        r = !lval_eq(v->cell[0], v->cell[1]);
+    }
+    lval_del(v);
+    return lval_num((double)r);
+}
+
+lval* builtin_if(lenv* e, lval* v) {
+    LASSERT_NUM("if", v, 3);
+    LASSERT_TYPE("if", v, 0, LVAL_NUM);
+    LASSERT_TYPE("if", v, 1, LVAL_QEXPR);
+    LASSERT_TYPE("if", v, 2, LVAL_QEXPR);
+
+    lval* x;
+    v->cell[1]->type = LVAL_SEXPR;
+    v->cell[2]->type = LVAL_SEXPR;
+
+    if (v->cell[0]->num) {
+        x = lval_eval(e, lval_pop(v, 1));
+    } else {
+        x = lval_eval(e, lval_pop(v, 2));
+    }
+
+    lval_del(v);
     return x;
 }

@@ -23,5 +23,6 @@ void    lval_print(lval*);
 void    lval_println(lval*);
 void    lval_expr_print(lval*, char, char);
 lval*   lval_call(lenv*, lval*, lval*);
+int     lval_eq(lval*, lval*);
 
 #endif
