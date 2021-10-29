@@ -122,6 +122,9 @@ void lenv_add_builtins(lenv* e) {
     lenv_def(e, f_true, v_true);
     lenv_def(e, f_false, v_false);
     
+    lenv_add_builtin(e, "load",  builtin_load);
+    lenv_add_builtin(e, "error", builtin_error);
+    lenv_add_builtin(e, "print", builtin_print);
 
     lenv_add_builtin(e, "if", builtin_if);
     lenv_add_builtin(e, "==", builtin_eq);

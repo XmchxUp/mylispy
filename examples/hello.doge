@@ -1,0 +1,5 @@
+(print "Hello World!")
+
+(+ 1 2)
+
+(def {a} 12)

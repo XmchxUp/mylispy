@@ -39,5 +39,9 @@ lval*   builtin_and(lenv*, lval*);
 lval*   builtin_or(lenv*, lval*);
 lval*   builtin_not(lenv*, lval*);
 lval*   builtin_logic(lenv*, lval*, char*);
+lval*   builtin_load(lenv*, lval*);
+lval*   builtin_print(lenv*, lval*);
+lval*   builtin_error(lenv*, lval*);
+
 
 #endif

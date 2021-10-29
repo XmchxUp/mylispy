@@ -15,7 +15,7 @@ typedef struct lval lval;
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 #define	MAXLINE	4096			/* max line length */
-#define VERSION "0.0.0.0.1.0"   /* my lisp version */
+#define VERSION "0.0.0.0.1.1"   /* my lisp version */
 
 #define LASSERT(args, cond, fmt, ...) \
     if (!(cond)) { \
@@ -41,7 +41,17 @@ typedef struct lval lval;
 // for debug
 #define MPC_AST_PRINT 0x1
 
-#define DEBUG_VERBOSE_SET   0x1
+#define DEBUG_VERBOSE_SET   0x0
+
+/*===================================gloabl data===================================*/
+mpc_parser_t* Number;
+mpc_parser_t* String;
+mpc_parser_t* Comment;
+mpc_parser_t* Symbol;
+mpc_parser_t* Sexpr;
+mpc_parser_t* Qexpr;
+mpc_parser_t* Expr;  
+mpc_parser_t* Lispy;
 
 /*===================================data type===================================*/
 #define TRUE    1

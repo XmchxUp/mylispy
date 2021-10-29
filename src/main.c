@@ -37,15 +37,6 @@ void add_history(char* unused) {}
 
 #define MPC_PARSER_COUNT 8
 
-// local data
-static mpc_parser_t* Number;
-static mpc_parser_t* String;
-static mpc_parser_t* Comment;
-static mpc_parser_t* Symbol;
-static mpc_parser_t* Sexpr;
-static mpc_parser_t* Qexpr;
-static mpc_parser_t* Expr;  
-static mpc_parser_t* Lispy;
 static lenv* e;
 
 static void print_vertion_info();
@@ -60,11 +51,24 @@ int main(int argc, char** argv) {
     e = lenv_new();
     lenv_add_builtins(e);
 
-    while (1) {
-        char* input = readline("doge>>> ");
-        add_history(input);
-        parse_input(input);
-        free(input);
+    // interactive prompt
+    if (argc == 1) {
+        while (1) {
+            char* input = readline("doge>>> ");
+            add_history(input);
+            parse_input(input);
+            Free(input);
+        }
+    } else if (argc >= 2) {
+        for (int i = 1; i < argc; i++) {
+            lval* args = lval_add(lval_sexpr(), lval_str(argv[i]));
+            lval* x = builtin_load(e, args);
+
+            if (x->type == LVAL_ERR) {
+                lval_println(x);
+            }
+            lval_del(x);
+        }
     }
 
     lenv_del(e);

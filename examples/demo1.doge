@@ -1,0 +1,10 @@
+(+ 1 1)
+(symbol 0) ;;; print symbol
+(symbol 1) ;;; print value
+(symbol 3) ;;; print symbol: value
+(def {a} 2)  ;;; define variable
+(head {ab {d} c}) ;;; ab
+(tail {a b c}) ;;; c
+(join {3} {a} {d}) ;;; {3 a d}
+(len {a b c {d f}}) ;;; 4
+(cons {a} {b}) ;;; {a b}

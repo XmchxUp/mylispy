@@ -402,3 +402,67 @@ lval* builtin_logic(lenv* e, lval* v, char* op) {
     lval_del(v);
     return lval_bool((double) r);
 }
+
+lval* builtin_load(lenv* e, lval* v) {
+    LASSERT_NUM("load", v, 1);
+    LASSERT_TYPE("load", v, 0, LVAL_STR);
+
+    // parse file
+    mpc_result_t r;
+    // 文件路径是相对当前运行位置
+    if (mpc_parse_contents(v->cell[0]->str, Lispy, &r)) {
+        
+        // read contents
+        lval* expr = lval_read(r.output);
+        mpc_ast_delete(r.output);
+
+        // 此处在文件里写doge代码时需要添加()让其变为整体S表达式，否则解析不对
+        // error.doge: print "hello world"
+        // correct.doge: (print "hello world")
+        while (expr->count) {
+            lval* x = lval_eval(e, lval_pop(expr, 0));
+            if (x->type == LVAL_ERR) {
+                lval_println(x);
+            }
+            lval_del(x);
+        }
+
+        lval_del(expr);
+        lval_del(v);
+
+        return lval_sexpr();
+    } else { // parse error
+        char* err_msg = mpc_err_string(r.error);
+        mpc_err_delete(r.error);
+
+        lval* err = lval_err("Could not load Library %s", err_msg);
+        
+        Free(err_msg);
+        lval_del(v);
+
+        return err;
+    }
+}
+
+lval* builtin_print(lenv* e, lval* v) {
+    for (int i = 0; i < v->count; i++) {
+        lval_print(v->cell[i]);
+        putchar(' ');
+    }
+
+    putchar('\n');
+    lval_del(v);
+
+    return lval_sexpr();
+}
+
+lval* builtin_error(lenv* e, lval* v) {
+    LASSERT_NUM("error", v, 1);
+    LASSERT_TYPE("error", v, 0, LVAL_STR);
+
+    lval* err = lval_err(v->cell[0]->str);
+
+    /* Delete arguments and return */
+    lval_del(v);
+    return err;
+}
