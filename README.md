@@ -7,7 +7,7 @@ Run:
 make
 ```
 
-Example:
+[Example](./examples):
 ```lisp
 Demo1:
 (+ 1 1)
@@ -39,28 +39,53 @@ fun {add-together x y} {+ x y} ;;; add-together 1 2 --> 3
 }) ;;; reverse {a b c d} --> {d c b a}
 ```
 
-Builtin Operation:
+Builtin:
 ```lisp
-symbol: <function>
-def: <function>
-list: <function>
-head: <function>
-tail: <function>
-eval: <function>
-join: <function>
-len: <function>
-cons: <function>
-init: <function>
-+: <function>
-add: <function>
--: <function>
-sub: <function>
-*: <function>
-mul: <function>
-/: <function>
-div: <function>
-max: <function>
-min: <function>
-%: <function>
-mod: <function>
+#true: 1
+#false: 0
+load: <builtin>
+error: <builtin>
+print: <builtin>
+if: <builtin>
+==: <builtin>
+!=: <builtin>
+>: <builtin>
+<: <builtin>
+>=: <builtin>
+<=: <builtin>
+!: <builtin>
+not: <builtin>
+&&: <builtin>
+and: <builtin>
+||: <builtin>
+or: <builtin>
+symbol: <builtin>
+exit: <builtin>
+lambda: <builtin>
+\: <builtin>
+def: <builtin>
+=: <builtin>
+list: <builtin>
+head: <builtin>
+second: <builtin>
+car: <builtin>
+cdr: <builtin>
+tail: <builtin>
+eval: <builtin>
+join: <builtin>
+len: <builtin>
+cons: <builtin>
+init: <builtin>
++: <builtin>
+add: <builtin>
+-: <builtin>
+sub: <builtin>
+*: <builtin>
+mul: <builtin>
+/: <builtin>
+div: <builtin>
+max: <builtin>
+min: <builtin>
+%: <builtin>
+mod: <builtin>
 ```
