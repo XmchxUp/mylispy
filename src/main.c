@@ -35,11 +35,12 @@ void add_history(char* unused) {}
 #endif
 #endif
 
-#define MPC_PARSER_COUNT 7
+#define MPC_PARSER_COUNT 8
 
 // local data
 static mpc_parser_t* Number;
 static mpc_parser_t* String;
+static mpc_parser_t* Comment;
 static mpc_parser_t* Symbol;
 static mpc_parser_t* Sexpr;
 static mpc_parser_t* Qexpr;
@@ -89,6 +90,7 @@ static void parse_input(char* input) {
 static void create_parser() {
     /*Create Some Parsers */
     String        = mpc_new("string");
+    Comment       = mpc_new("comment");
     Number        = mpc_new("number");
     Symbol        = mpc_new("symbol");
     Sexpr         = mpc_new("sexpr");
@@ -100,17 +102,20 @@ static void create_parser() {
         "                                                                     \
             number   : /-?\\d+([.]\\d+)?/ ;                                    \
             string   : /\"(\\\\.|[^\"])*\"/ ;                                   \
+            comment  : /;[^\\r\\n]*/ ;                                           \
             symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&%|#]+/ ;                     \
             sexpr    : '(' <expr>* ')';                                           \
             qexpr    : '{' <expr>* '}';                                            \
-            expr     : <number> | <symbol> | <string> | <sexpr> | <qexpr> ;         \
+            expr     : <number> | <symbol> | <string> | <comment> | <sexpr> | <qexpr> ;         \
             lispy    : /^/ <expr>* /$/ ;                                             \
         ",
-        Number, String, Symbol, Sexpr, Qexpr, Expr, Lispy);
+        Number, String, Comment, Symbol, Sexpr, Qexpr, Expr, Lispy);
 }
 
 static void clean_parser() {
-    mpc_cleanup(MPC_PARSER_COUNT, Number, String, Symbol, Sexpr, Qexpr, Expr, Lispy);
+    mpc_cleanup(MPC_PARSER_COUNT, 
+        Number, String, Comment, Symbol, 
+        Sexpr, Qexpr, Expr, Lispy);
 }
 
 static void print_vertion_info() {
