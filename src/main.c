@@ -35,10 +35,11 @@ void add_history(char* unused) {}
 #endif
 #endif
 
-#define MPC_PARSER_COUNT 6
+#define MPC_PARSER_COUNT 7
 
 // local data
 static mpc_parser_t* Number;
+static mpc_parser_t* String;
 static mpc_parser_t* Symbol;
 static mpc_parser_t* Sexpr;
 static mpc_parser_t* Qexpr;
@@ -87,6 +88,7 @@ static void parse_input(char* input) {
 
 static void create_parser() {
     /*Create Some Parsers */
+    String        = mpc_new("string");
     Number        = mpc_new("number");
     Symbol        = mpc_new("symbol");
     Sexpr         = mpc_new("sexpr");
@@ -95,19 +97,20 @@ static void create_parser() {
     Lispy         = mpc_new("lispy");
 
     mpca_lang(MPCA_LANG_DEFAULT,
-        "                                                                      \
-            number   : /-?\\d+([.]\\d+)?/ ;                                     \
-            symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&%|#]+/ ;                      \
+        "                                                                     \
+            number   : /-?\\d+([.]\\d+)?/ ;                                    \
+            string   : /\"(\\\\.|[^\"])*\"/ ;                                   \
+            symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&%|#]+/ ;                     \
             sexpr    : '(' <expr>* ')';                                           \
             qexpr    : '{' <expr>* '}';                                            \
-            expr     : <number> | <symbol> | <sexpr> | <qexpr> ;                    \
+            expr     : <number> | <symbol> | <string> | <sexpr> | <qexpr> ;         \
             lispy    : /^/ <expr>* /$/ ;                                             \
         ",
-        Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
+        Number, String, Symbol, Sexpr, Qexpr, Expr, Lispy);
 }
 
 static void clean_parser() {
-    mpc_cleanup(MPC_PARSER_COUNT, Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
+    mpc_cleanup(MPC_PARSER_COUNT, Number, String, Symbol, Sexpr, Qexpr, Expr, Lispy);
 }
 
 static void print_vertion_info() {

@@ -15,7 +15,7 @@ typedef struct lval lval;
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 #define	MAXLINE	4096			/* max line length */
-#define VERSION "0.0.0.0.0.8"   /* my lisp version */
+#define VERSION "0.0.0.0.0.9"   /* my lisp version */
 
 #define LASSERT(args, cond, fmt, ...) \
     if (!(cond)) { \
@@ -47,7 +47,7 @@ typedef struct lval lval;
 #define TRUE    1
 #define FALSE   0
 
-enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_BOOL,
+enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_BOOL, LVAL_STR,
        LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };
 
 typedef lval* (*lbuiltin)(lenv*, lval*);
@@ -59,6 +59,7 @@ struct lval {
     double num;
     char* err;
     char* sym;
+    char* str;
 
     /* Function */
     lbuiltin builtin;

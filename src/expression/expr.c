@@ -48,6 +48,14 @@ lval* lval_bool(double x) {
     return res;
 }
 
+lval* lval_str(char* str) {
+    lval* v = Malloc(sizeof(lval));
+    v->str = Malloc(strlen(str) + 1);
+    strcpy(v->str, str);
+    v->type = LVAL_STR;
+    return v;
+}
+
 /* A pointer to a new empty Sexpr lval */
 lval* lval_sexpr(void) {
   lval* v = Malloc(sizeof(lval));
@@ -95,6 +103,9 @@ void lval_del(lval* lv) {
             lval_del(lv->body);
         }
         break;
+    case LVAL_STR:
+        Free(lv->str);
+        break;
     case LVAL_BOOL:
     case LVAL_NUM:
         break;
@@ -123,6 +134,17 @@ lval* lval_read_num(mpc_ast_t* t) {
         lval_err("invalid number");
 }
 
+lval* lval_read_str(mpc_ast_t* t) {
+    t->contents[strlen(t->contents) - 1] = '\0';
+    char* unescaped = Malloc(strlen(t->contents + 1) + 1);
+    strcpy(unescaped, t->contents + 1);
+
+    unescaped = mpcf_unescape(unescaped);
+    lval* str = lval_str(unescaped);
+    Free(unescaped);
+    return str;
+}
+
 /*
 doge>>> (+ 1 2 3)
 > 
@@ -136,6 +158,10 @@ doge>>> (+ 1 2 3)
     regex
 */
 lval* lval_read(mpc_ast_t* t) {
+    if (strstr(t->tag, "string")) {
+        return lval_read_str(t);
+    }
+
     if (strstr(t->tag, "number")) {
         return lval_read_num(t);
     }
@@ -305,6 +331,8 @@ int lval_eq(lval* x, lval* y) {
     }
 
     switch (x->type) {
+        case LVAL_STR:
+            return (strcmp(x->str, y->str) == 0);
         case LVAL_BOOL:
         case LVAL_NUM: 
             return (x->num == y->num);
@@ -383,6 +411,10 @@ lval* lval_copy(lval* v) {
             x->body = lval_copy(v->body);
         }
         break;
+    case LVAL_STR:
+        x->str = Malloc(strlen(v->str) + 1);
+        strcpy(x->str, v->str);
+        break;
     case LVAL_BOOL:
     case LVAL_NUM:
         x->num = v->num;
@@ -427,6 +459,9 @@ void lval_println(lval* x) {
 void lval_print(lval* lv) {
     switch (lv->type)
     {
+    case LVAL_STR:
+        lval_print_str(lv);
+        break;
     case LVAL_BOOL:
         if (lv->num) {
             printf("#true");
@@ -465,6 +500,15 @@ void lval_print(lval* lv) {
     }
 }
 
+void lval_print_str(lval* v) {
+    char* escaped = Malloc(strlen(v->str) + 1);
+    strcpy(escaped, v->str);
+
+    escaped = mpcf_escape(escaped);
+    printf("\"%s\"", escaped);
+    Free(escaped);
+}
+
 lval* lval_join(lval* x, lval* y) {
     while (y->count) {
         x = lval_add(x, lval_pop(y, 0));
@@ -476,6 +520,7 @@ lval* lval_join(lval* x, lval* y) {
 
 char* ltype_name(int t) {
   switch(t) {
+    case LVAL_STR: return "String";
     case LVAL_FUN: return "Function";
     case LVAL_NUM: return "Number";
     case LVAL_ERR: return "Error";
