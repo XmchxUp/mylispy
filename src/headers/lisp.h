@@ -15,7 +15,7 @@ typedef struct lval lval;
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 #define	MAXLINE	4096			/* max line length */
-#define VERSION "0.0.0.0.1.1"   /* my lisp version */
+#define VERSION "0.0.0.0.1.2"   /* my lisp version */
 
 #define LASSERT(args, cond, fmt, ...) \
     if (!(cond)) { \

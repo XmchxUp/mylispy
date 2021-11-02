@@ -1,11 +1,14 @@
 > [Build your own lisp](http://buildyourownlisp.com/contents)
-
-### My Lisp in C
+> Todo:
+>   - Ch14、15、16的 Bouns
+### Doge Language (My Lisp in C)
 
 Run:
 ```bash
 make
 ```
+> 了解更多关于Doge语言的有趣的[标准库](./examples/builtin.doge) [Demo](./examples/builtin_demo.doge)
+
 
 [Example](./examples):
 ```lisp

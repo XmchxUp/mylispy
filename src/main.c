@@ -43,6 +43,7 @@ static void print_vertion_info();
 static void create_parser();
 static void clean_parser();
 static void parse_input(char*);
+static void load_builtin();
 
 int main(int argc, char** argv) {
 
@@ -50,6 +51,8 @@ int main(int argc, char** argv) {
     print_vertion_info();
     e = lenv_new();
     lenv_add_builtins(e);
+
+    load_builtin();
 
     // interactive prompt
     if (argc == 1) {
@@ -74,6 +77,17 @@ int main(int argc, char** argv) {
     lenv_del(e);
     clean_parser();
     return 0;
+}
+
+static void load_builtin() {
+    // 根目录下运行加载
+    lval* args = lval_add(lval_sexpr(), lval_str("./examples/builtin.doge"));
+    lval* x = builtin_load(e, args);
+
+    if (x->type == LVAL_ERR) {
+        lval_println(x);
+    }
+    lval_del(x);
 }
 
 static void parse_input(char* input) {
